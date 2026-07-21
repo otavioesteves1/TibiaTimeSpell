@@ -1,4 +1,4 @@
-# Alerta de Magias Tibia
+# TibiaTimeSpell
 
 App em Electron que avisa quando está na hora de usar cada magia de novo no Tibia.
 
@@ -29,7 +29,7 @@ O overlay é *click-through*: o mouse atravessa ele, não atrapalha a gameplay.
 ### Versão portátil (recomendado)
 
 Baixe o `.zip` mais recente em [Releases](../../releases), extraia em qualquer pasta e execute
-`AlertaMagiasTibia.exe`. Não precisa instalar nada.
+`TibiaTimeSpell.exe`. Não precisa instalar nada.
 
 ### Rodando do código
 
@@ -44,7 +44,7 @@ Para gerar a versão portátil:
 npm run build
 ```
 
-O resultado sai em `dist/AlertaMagiasTibia-win32-x64/`.
+O resultado sai em `dist/TibiaTimeSpell-win32-x64/`.
 
 ## Como usar
 
@@ -61,8 +61,8 @@ O resultado sai em `dist/AlertaMagiasTibia-win32-x64/`.
 
 - O jogo deve estar em **janela** ou **tela cheia em janela**. Em fullscreen exclusivo (modo
   antigo) nenhum programa consegue desenhar por cima.
-- As configurações ficam em `%APPDATA%/tibia-alerta-magias/config.json`, e as imagens em
-  `%APPDATA%/tibia-alerta-magias/images/`.
+- As configurações ficam em `%APPDATA%/TibiaTimeSpell/config.json`, e as imagens em
+  `%APPDATA%/TibiaTimeSpell/images/`.
 - A detecção de teclas usa um hook global apenas de leitura (`uiohook-napi`): o app **escuta** a
   tecla, mas não a intercepta — o jogo recebe normalmente.
 

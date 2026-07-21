@@ -36,8 +36,27 @@ const DEFAULT_STATE = {
   settings: { corner: 'top-right', volume: 0.6, customPos: null, size: 'large', layout: 'vertical', opacity: 1, iconSize: 48 },
 };
 
-// pasta fixa de config (senao o Electron usaria o productName com espacos)
-app.setPath('userData', path.join(app.getPath('appData'), 'tibia-alerta-magias'));
+// pasta fixa de config (senao o Electron usaria o productName com espacos).
+// O projeto se chamava "tibia-alerta-magias": migra a pasta antiga pra nao perder nada.
+const USER_DIR = path.join(app.getPath('appData'), 'TibiaTimeSpell');
+const LEGACY_DIR = path.join(app.getPath('appData'), 'tibia-alerta-magias');
+let dataDir = USER_DIR;
+try {
+  if (!fs.existsSync(USER_DIR) && fs.existsSync(LEGACY_DIR)) fs.renameSync(LEGACY_DIR, USER_DIR);
+} catch (e) {
+  dataDir = LEGACY_DIR; // migracao falhou: segue na pasta antiga em vez de perder a config
+  console.error('Migracao da pasta de config falhou, usando a antiga:', e.message);
+}
+app.setPath('userData', dataDir);
+
+// caminhos de imagem salvos apontam pra pasta antiga: reaponta pra nova
+function remapImagem(p) {
+  if (typeof p !== 'string' || !p) return null;
+  if (dataDir !== LEGACY_DIR && p.startsWith(LEGACY_DIR)) {
+    return path.join(dataDir, p.slice(LEGACY_DIR.length + 1));
+  }
+  return p;
+}
 
 let state = null;
 let configWin = null;
@@ -85,7 +104,7 @@ function sanitizeSpell(sp) {
     cooldown: Number.isFinite(cd) ? Math.min(3600, Math.max(2, cd)) : 40,
     color: /^#[0-9a-fA-F]{6}$/.test(sp.color || '') ? sp.color : CORES[0],
     enabled: !!sp.enabled,
-    image: typeof sp.image === 'string' ? sp.image : null,
+    image: remapImagem(sp.image),
     pos,
   };
 }
@@ -413,11 +432,12 @@ function createConfigWindow() {
   configWin = new BrowserWindow({
     width: 940,
     height: 680,
-    minWidth: 780,
-    minHeight: 500,
-    backgroundColor: '#0f0f17',
+    minWidth: 360,   // modo magrinho: a interface se adapta ate ficar bem estreita
+    minHeight: 420,
+    backgroundColor: '#0c0c0c',
     autoHideMenuBar: true,
-    title: 'Alerta de Magias Tibia',
+    frame: false,    // barra de titulo propria (sem a faixa azul do Windows)
+    title: 'TibiaTimeSpell',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       backgroundThrottling: false, // o som dos avisos toca aqui, mesmo minimizada
@@ -533,6 +553,15 @@ ipcMain.on('state:save', (_e, next) => {
 
 ipcMain.on('spell:restart', (_e, id) => restartTimer(Number(id)));
 
+// botoes da barra de titulo propria
+ipcMain.on('win:minimize', () => configWin && configWin.minimize());
+ipcMain.on('win:maximize', () => {
+  if (!configWin) return;
+  if (configWin.isMaximized()) configWin.unmaximize();
+  else configWin.maximize();
+});
+ipcMain.on('win:close', () => configWin && configWin.close());
+
 ipcMain.on('spells:restart-all', () => {
   for (const id of timers.keys()) restartTimer(id);
 });
@@ -559,6 +588,8 @@ if (!gotLock) {
 
   app.whenReady().then(() => {
     state = loadState();
+    // se a migracao reapontou alguma imagem, grava o caminho novo de uma vez
+    if (state.spells.some((sp) => sp.image && sp.image.startsWith(dataDir))) saveStateToDisk();
     createConfigWindow();
     reconcileTimers();
     syncOverlays();

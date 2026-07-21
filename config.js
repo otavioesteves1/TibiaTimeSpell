@@ -270,6 +270,11 @@ document.getElementById('btn-add').onclick = () => {
 };
 
 document.getElementById('btn-restart-all').onclick = () => api.restartAll();
+
+// botoes da barra de titulo propria
+document.getElementById('win-min').onclick = () => api.winMinimize();
+document.getElementById('win-max').onclick = () => api.winMaximize();
+document.getElementById('win-close').onclick = () => api.winClose();
 document.getElementById('btn-test').onclick = () => beepFreq(880, 0.12);
 
 function atualizarIconSlider() {

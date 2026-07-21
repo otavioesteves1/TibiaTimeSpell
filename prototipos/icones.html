@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>TibiaTimeSpell — opções de ícone</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --acc: #9d7bff; --acc-hi: #b39bff; --line: #1f1f1f; --line2: #2b2b2b; }
+  body {
+    background: #0c0c0c; color: #ececec;
+    font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px;
+    padding: 24px; -webkit-user-select: none;
+  }
+  h1 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .sub { color: #6e6e6e; font-size: 11.5px; margin-bottom: 22px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; }
+
+  .opt {
+    border: 1px solid var(--line); border-radius: 10px; background: #111;
+    padding: 14px 12px; text-align: center;
+  }
+  .opt:hover { border-color: var(--acc); }
+  .num {
+    display: inline-block; font-size: 10px; letter-spacing: 1px; color: #6e6e6e;
+    margin-bottom: 12px;
+  }
+  .row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; }
+
+  /* mesma caixa do app */
+  .mark {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: linear-gradient(180deg, #262626, #191919);
+    border: 1px solid var(--line2);
+    display: grid; place-items: center; flex: none;
+  }
+  .mark svg { width: 13px; height: 13px; }
+  /* variante cheia (fundo roxo) */
+  .mark.solid { background: linear-gradient(160deg, var(--acc-hi), var(--acc)); border-color: transparent; }
+  .mark.solid svg { fill: #150c26; stroke: #150c26; }
+
+  .big { width: 40px; height: 40px; border-radius: 10px; }
+  .big svg { width: 22px; height: 22px; }
+
+  svg.fill { fill: var(--acc); }
+  svg.stroke { fill: none; stroke: var(--acc); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .name { font-size: 11.5px; color: #9c9c9c; }
+</style>
+</head>
+<body>
+
+<h1>TibiaTimeSpell — opções de ícone</h1>
+<p class="sub">Cada opção aparece no tamanho real do app (24px) e ampliada (40px). Me diga o número.</p>
+
+<div class="grid">
+
+  <div class="opt">
+    <span class="num">01</span>
+    <div class="row">
+      <div class="mark"><svg class="stroke" viewBox="0 0 24 24"><path d="M12 7v5l3.5 2"/><circle cx="12" cy="12" r="9"/></svg></div>
+      <div class="mark big"><svg class="stroke" viewBox="0 0 24 24"><path d="M12 7v5l3.5 2"/><circle cx="12" cy="12" r="9"/></svg></div>
+    </div>
+    <span class="name">Relógio</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">02</span>
+    <div class="row">
+      <div class="mark"><svg class="stroke" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v5h-5"/></svg></div>
+      <div class="mark big"><svg class="stroke" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v5h-5"/></svg></div>
+    </div>
+    <span class="name">Cooldown (seta circular)</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">03</span>
+    <div class="row">
+      <div class="mark"><svg class="stroke" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M7 2c0 5 5 6 5 10S7 17 7 22"/><path d="M17 2c0 5-5 6-5 10s5 5 5 10"/></svg></div>
+      <div class="mark big"><svg class="stroke" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M7 2c0 5 5 6 5 10S7 17 7 22"/><path d="M17 2c0 5-5 6-5 10s5 5 5 10"/></svg></div>
+    </div>
+    <span class="name">Ampulheta</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">04</span>
+    <div class="row">
+      <div class="mark"><svg class="fill" viewBox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67z"/></svg></div>
+      <div class="mark big"><svg class="fill" viewBox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67z"/></svg></div>
+    </div>
+    <span class="name">Chama</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">05</span>
+    <div class="row">
+      <div class="mark"><svg class="fill" viewBox="0 0 24 24"><path d="M12 1.6l2.4 6.1 6.1 2.4-6.1 2.4L12 18.6l-2.4-6.1L3.5 10.1l6.1-2.4z"/><path d="M19 16.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z"/></svg></div>
+      <div class="mark big"><svg class="fill" viewBox="0 0 24 24"><path d="M12 1.6l2.4 6.1 6.1 2.4-6.1 2.4L12 18.6l-2.4-6.1L3.5 10.1l6.1-2.4z"/><path d="M19 16.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z"/></svg></div>
+    </div>
+    <span class="name">Brilho mágico</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">06</span>
+    <div class="row">
+      <div class="mark"><svg class="stroke" viewBox="0 0 24 24"><path d="M4 20L15 9"/><path d="M14.5 3.5l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8L10.5 7.5l2.8-1.2z"/><path d="M19 14l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z"/></svg></div>
+      <div class="mark big"><svg class="stroke" viewBox="0 0 24 24"><path d="M4 20L15 9"/><path d="M14.5 3.5l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8L10.5 7.5l2.8-1.2z"/><path d="M19 14l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z"/></svg></div>
+    </div>
+    <span class="name">Varinha</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">07</span>
+    <div class="row">
+      <div class="mark"><svg class="stroke" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="3.2"/></svg></div>
+      <div class="mark big"><svg class="stroke" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="3.2"/></svg></div>
+    </div>
+    <span class="name">Selo arcano</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">08</span>
+    <div class="row">
+      <div class="mark"><svg class="stroke" viewBox="0 0 24 24"><path d="M18 9A6 6 0 1 0 6 9c0 5-2.5 6.5-2.5 6.5h17S18 14 18 9z"/><path d="M10.3 19.5a2 2 0 0 0 3.4 0"/></svg></div>
+      <div class="mark big"><svg class="stroke" viewBox="0 0 24 24"><path d="M18 9A6 6 0 1 0 6 9c0 5-2.5 6.5-2.5 6.5h17S18 14 18 9z"/><path d="M10.3 19.5a2 2 0 0 0 3.4 0"/></svg></div>
+    </div>
+    <span class="name">Sino de alerta</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">09</span>
+    <div class="row">
+      <div class="mark"><svg class="stroke" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9.5v3.5l2.5 1.5"/><path d="M9 2h6M12 2v3"/></svg></div>
+      <div class="mark big"><svg class="stroke" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9.5v3.5l2.5 1.5"/><path d="M9 2h6M12 2v3"/></svg></div>
+    </div>
+    <span class="name">Cronômetro</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">10</span>
+    <div class="row">
+      <div class="mark"><svg class="stroke" viewBox="0 0 24 24"><path d="M5 3h14l-1.5 16.5L12 22l-5.5-2.5z"/><path d="M12 7v5M12 15h.01"/></svg></div>
+      <div class="mark big"><svg class="stroke" viewBox="0 0 24 24"><path d="M5 3h14l-1.5 16.5L12 22l-5.5-2.5z"/><path d="M12 7v5M12 15h.01"/></svg></div>
+    </div>
+    <span class="name">Runa</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">11</span>
+    <div class="row">
+      <div class="mark solid"><svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v5h-5"/></svg></div>
+      <div class="mark solid big"><svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v5h-5"/></svg></div>
+    </div>
+    <span class="name">Cooldown em roxo cheio</span>
+  </div>
+
+  <div class="opt">
+    <span class="num">12</span>
+    <div class="row">
+      <div class="mark solid"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12"/><path d="M7 2c0 5 5 6 5 10S7 17 7 22"/><path d="M17 2c0 5-5 6-5 10s5 5 5 10"/></svg></div>
+      <div class="mark solid big"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12"/><path d="M7 2c0 5 5 6 5 10S7 17 7 22"/><path d="M17 2c0 5-5 6-5 10s5 5 5 10"/></svg></div>
+    </div>
+    <span class="name">Ampulheta em roxo cheio</span>
+  </div>
+
+</div>
+
+</body>
+</html>
