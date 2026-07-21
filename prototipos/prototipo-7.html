@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Alerta de Magias Tibia</title>
+<style>
+  :root {
+    --bg: #1b1b1f;
+    --panel: #2a2a30;
+    --panel2: #232329;
+    --edge-hi: #4a4a54;
+    --edge-lo: #101014;
+    --txt: #c4c4cc;
+    --dim: #83838f;
+    --accent: #ffb020;
+    --green: #46cc5a;
+    --red: #ff4444;
+    --slot: #0b0b0e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; font-family: Verdana, Tahoma, 'Segoe UI', sans-serif;
+    font-size: 11px; color: var(--txt); -webkit-user-select: none; }
+  body { min-height: 100vh; padding: 20px;
+    display: flex; align-items: flex-start; justify-content: center;
+    background: radial-gradient(800px 500px at 50% 0, #26262c, #141418 70%); }
+
+  .frame { width: 900px; background: var(--panel);
+    border: 2px solid; border-color: var(--edge-hi) var(--edge-lo) var(--edge-lo) var(--edge-hi);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.7); padding: 4px; }
+
+  .titlebar { height: 26px; display: flex; align-items: center; gap: 8px; padding: 0 6px 0 10px;
+    margin-bottom: 4px; background: linear-gradient(#34343c, #26262c);
+    border: 1px solid; border-color: var(--edge-hi) var(--edge-lo) var(--edge-lo) var(--edge-hi); }
+  .titlebar .tt { flex: 1; font-weight: bold; font-size: 12px; color: #e4e4ec;
+    text-shadow: 1px 1px 0 #000; letter-spacing: 0.5px; }
+  .wbtn { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: #d0d0d8; cursor: pointer; background: linear-gradient(#3a3a42, #2a2a30);
+    border: 1px solid; border-color: var(--edge-hi) var(--edge-lo) var(--edge-lo) var(--edge-hi); }
+
+  .content { display: flex; gap: 4px; align-items: flex-start; }
+  .esq { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .dir { width: 286px; display: flex; flex-direction: column; gap: 4px; }
+
+  .panel { background: var(--panel);
+    border: 1px solid; border-color: var(--edge-hi) var(--edge-lo) var(--edge-lo) var(--edge-hi); }
+  .phead { height: 20px; display: flex; align-items: center; gap: 6px; padding: 0 4px 0 8px;
+    background: linear-gradient(#323238, #26262c); border-bottom: 1px solid var(--edge-lo); }
+  .phead .pt { flex: 1; font-weight: bold; font-size: 11px; color: #dcdce4; text-shadow: 1px 1px 0 #000; }
+  .hbtn { width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;
+    font-size: 8px; color: #c0c0c8; cursor: pointer; background: linear-gradient(#3a3a42, #2a2a30);
+    border: 1px solid; border-color: var(--edge-hi) var(--edge-lo) var(--edge-lo) var(--edge-hi); }
+  .pbody { padding: 8px; background: var(--panel2); }
+
+  /* ===== hotkey card ===== */
+  .hkgrid { display: flex; flex-direction: column; gap: 6px; }
+  .hk {
+    display: grid; grid-template-columns: 54px 1fr 46px 54px 26px 68px 44px;
+    gap: 8px; align-items: center; padding: 6px;
+    background: linear-gradient(#2c2c33, #26262c);
+    border: 1px solid; border-color: #3c3c44 #1a1a1e #1a1a1e #3c3c44;
+  }
+  .hk:hover { background: linear-gradient(#323239, #2a2a31); }
+  .hk.off { opacity: 0.45; }
+
+  /* slot de hotkey com cooldown circular */
+  .cd {
+    width: 50px; height: 50px; position: relative; cursor: pointer;
+    background: radial-gradient(circle at 50% 40%, #17171c, var(--slot));
+    border: 2px solid; border-color: #060608 #33333c #33333c #060608;
+  }
+  .cd .icon { position: absolute; inset: 3px; display: flex; align-items: center; justify-content: center; }
+  .cd .icon svg { image-rendering: pixelated; filter: drop-shadow(0 1px 0 #000); }
+  /* sweep escuro por cima = tempo restante */
+  .cd .sweep { position: absolute; inset: 3px; border-radius: 1px; }
+  .cd .num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: bold; color: #fff; text-shadow: 0 0 4px #000, 1px 1px 0 #000;
+    font-variant-numeric: tabular-nums; }
+  .cd .kb { position: absolute; left: 1px; top: 0; font-size: 9px; font-weight: bold;
+    color: var(--accent); text-shadow: 1px 1px 0 #000; }
+  .cd.ready { border-color: var(--red) var(--red) var(--red) var(--red);
+    animation: glow 0.5s ease-in-out infinite alternate; }
+  .cd.ready .num { color: var(--red); font-size: 10px; }
+  @keyframes glow { from { box-shadow: 0 0 3px rgba(255,68,68,0.4); }
+    to { box-shadow: 0 0 14px rgba(255,68,68,0.9); } }
+
+  .hk .swrap { display: flex; align-items: center; gap: 6px; }
+  .sw { width: 32px; height: 17px; border-radius: 9px; position: relative; cursor: pointer;
+    background: #0c0c10; border: 1px solid #1a1a1e; }
+  .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 11px; height: 11px;
+    border-radius: 50%; background: #55555f; transition: 0.15s; }
+  .sw.on { background: linear-gradient(#2c6a34, #1f4f26); border-color: #3c8044; }
+  .sw.on::after { left: 17px; background: radial-gradient(circle at 40% 35%, #9dff9d, var(--green));
+    box-shadow: 0 0 5px rgba(70,204,90,0.7); }
+  .nm { font-weight: bold; font-size: 12px; color: #e0e0e8; }
+
+  .inp { width: 100%; font: inherit; padding: 5px 6px; color: var(--txt); background: var(--slot);
+    border: 1px solid; border-color: #060608 #333 #333 #060608; outline: none; }
+  .inp:focus { color: #fff; box-shadow: inset 0 0 0 1px var(--accent); }
+  .inp.mid { text-align: center; }
+  .keycap { height: 26px; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 12px; color: var(--accent); text-shadow: 1px 1px 0 #000;
+    background: linear-gradient(#34343c, #26262c);
+    border: 1px solid; border-color: var(--edge-hi) var(--edge-lo) var(--edge-lo) var(--edge-hi); }
+  .cor { width: 24px; height: 24px; padding: 2px; cursor: pointer; background: var(--slot);
+    border: 1px solid; border-color: #060608 #333 #333 #060608; }
+  .cor i { display: block; width: 100%; height: 100%; }
+
+  .acts { display: flex; gap: 4px; justify-content: flex-end; }
+  .ib { width: 19px; height: 19px; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #c4c4cc; cursor: pointer; background: linear-gradient(#3a3a42, #2a2a30);
+    border: 1px solid; border-color: var(--edge-hi) var(--edge-lo) var(--edge-lo) var(--edge-hi); }
+  .ib:hover { color: #fff; }
+  .ib.del:hover { color: var(--red); }
+
+  .foot { display: flex; gap: 5px; padding-top: 8px; }
+  .btn { font: inherit; font-weight: bold; cursor: pointer; padding: 7px 14px; color: #e4e4ec;
+    text-shadow: 1px 1px 0 #000; background: linear-gradient(#34343c, #26262c);
+    border: 1px solid; border-color: var(--edge-hi) var(--edge-lo) var(--edge-lo) var(--edge-hi); }
+  .btn:hover { color: #fff; }
+  .btn.accent { color: #201400; background: linear-gradient(#ffc040, #d88c10);
+    border-color: #ffd97a #7a5008 #7a5008 #ffd97a; text-shadow: none; }
+  .btn.full { width: 100%; justify-content: center; display: flex; }
+
+  .opt { display: flex; align-items: center; gap: 8px; padding: 4px 2px; }
+  .opt > label { width: 88px; color: var(--dim); }
+  .opt .val { width: 42px; text-align: right; color: var(--accent); font-weight: bold; }
+  select.inp { cursor: pointer; } select.inp option { background: #222; }
+  .slider { flex: 1; height: 8px; position: relative; cursor: pointer; background: var(--slot);
+    border: 1px solid; border-color: #060608 #333 #333 #060608; }
+  .slider .fill { position: absolute; left: 1px; top: 1px; bottom: 1px;
+    background: linear-gradient(90deg, #d88c10, var(--accent)); }
+  .slider .th { position: absolute; top: -3px; transform: translateX(-50%); width: 11px; height: 14px;
+    background: linear-gradient(#e6e6ee, #9a9aa2); border: 1px solid; border-color: #fff #333 #333 #fff; }
+
+  .game { height: 128px; position: relative; overflow: hidden;
+    border: 2px solid; border-color: #060608 #33333c #33333c #060608;
+    background: repeating-linear-gradient(90deg, #3d5a2c 0 32px, #43602f 32px 64px),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0 32px, transparent 32px 64px); }
+  .gcd { position: absolute; width: 40px; height: 40px;
+    background: radial-gradient(circle at 50% 40%, #17171c, var(--slot));
+    border: 2px solid; border-color: #060608 #33333c #33333c #060608; }
+  .gcd .gi { position: absolute; inset: 3px; display: flex; align-items: center; justify-content: center; }
+  .gcd .gsweep { position: absolute; inset: 3px; }
+  .gcd .gn { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: bold; color: #fff; text-shadow: 0 0 4px #000, 1px 1px 0 #000; }
+  .gcd .gk { position: absolute; left: 1px; top: 0; font-size: 8px; font-weight: bold; color: var(--accent); text-shadow: 1px 1px 0 #000; }
+  .gcd.a { left: 16px; top: 20px; }
+  .gcd.b { left: 66px; top: 20px; border-color: var(--red) var(--red) var(--red) var(--red);
+    animation: glow 0.5s ease-in-out infinite alternate; }
+  .gcd.b .gn { color: var(--red); font-size: 9px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="titlebar"><span class="tt">Alerta de Magias Tibia</span><div class="wbtn">–</div><div class="wbtn">✕</div></div>
+
+  <div class="content">
+    <div class="esq">
+      <div class="panel">
+        <div class="phead"><span class="pt">Magias</span><div class="hbtn">▴</div><div class="hbtn">✕</div></div>
+        <div class="pbody">
+          <div class="hkgrid">
+
+            <div class="hk">
+              <div class="cd">
+                <div class="icon"><svg width="40" height="40" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                  <rect x="4" y="0" width="2" height="1" fill="#ffe14a"/><rect x="3" y="1" width="1" height="2" fill="#ff9a2c"/><rect x="5" y="1" width="2" height="2" fill="#ffd23c"/>
+                  <rect x="2" y="3" width="2" height="2" fill="#f2661d"/><rect x="4" y="3" width="3" height="2" fill="#ff9a2c"/><rect x="1" y="5" width="3" height="2" fill="#d63c12"/><rect x="4" y="5" width="3" height="2" fill="#f2661d"/><rect x="2" y="7" width="5" height="2" fill="#a52408"/></svg></div>
+                <div class="sweep" style="background: conic-gradient(rgba(0,0,0,0.72) 0 207deg, transparent 207deg 360deg);"></div>
+                <div class="num">23</div>
+                <div class="kb">4</div>
+              </div>
+              <div class="swrap"><span class="sw on"></span><input class="inp" value="Flam"></div>
+              <div class="keycap">4</div>
+              <input class="inp mid" value="40">
+              <div class="cor"><i style="background:#8b5cf6"></i></div>
+              <input class="inp mid" value="Flam" style="visibility:hidden">
+              <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+            </div>
+
+            <div class="hk">
+              <div class="cd ready">
+                <div class="icon"><svg width="40" height="40" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                  <rect x="2" y="1" width="6" height="7" fill="#2c6b1f"/><rect x="3" y="2" width="4" height="5" fill="#43a02c"/><rect x="4" y="3" width="2" height="3" fill="#8fe05a"/></svg></div>
+                <div class="num">JÁ!</div>
+                <div class="kb">F3</div>
+              </div>
+              <div class="swrap"><span class="sw on"></span><input class="inp" value="Croco"></div>
+              <div class="keycap">F3</div>
+              <input class="inp mid" value="180">
+              <div class="cor"><i style="background:#22c55e"></i></div>
+              <input class="inp mid" style="visibility:hidden">
+              <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+            </div>
+
+            <div class="hk off">
+              <div class="cd">
+                <div class="icon"><svg width="40" height="40" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                  <rect x="3" y="1" width="4" height="7" fill="#2f66a0"/><rect x="4" y="2" width="2" height="4" fill="#6fa8dc"/><rect x="4" y="1" width="2" height="1" fill="#bfe0ff"/></svg></div>
+                <div class="kb">F7</div>
+              </div>
+              <div class="swrap"><span class="sw"></span><input class="inp" value="Utura"></div>
+              <div class="keycap">F7</div>
+              <input class="inp mid" value="120">
+              <div class="cor"><i style="background:#06b6d4"></i></div>
+              <input class="inp mid" style="visibility:hidden">
+              <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+            </div>
+
+          </div>
+          <div class="foot">
+            <button class="btn accent">+ Adicionar magia</button>
+            <button class="btn">↻ Reiniciar todos</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="phead"><span class="pt">Prévia no jogo</span><div class="hbtn">▴</div></div>
+        <div class="pbody" style="padding:3px">
+          <div class="game">
+            <div class="gcd a">
+              <div class="gi"><svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges"><rect x="4" y="0" width="2" height="1" fill="#ffe14a"/><rect x="3" y="1" width="1" height="2" fill="#ff9a2c"/><rect x="5" y="1" width="2" height="2" fill="#ffd23c"/><rect x="2" y="3" width="2" height="2" fill="#f2661d"/><rect x="4" y="3" width="3" height="2" fill="#ff9a2c"/><rect x="1" y="5" width="3" height="2" fill="#d63c12"/><rect x="4" y="5" width="3" height="2" fill="#f2661d"/><rect x="2" y="7" width="5" height="2" fill="#a52408"/></svg></div>
+              <div class="gsweep" style="background: conic-gradient(rgba(0,0,0,0.72) 0 207deg, transparent 207deg 360deg);"></div>
+              <div class="gn">23</div><div class="gk">4</div>
+            </div>
+            <div class="gcd b">
+              <div class="gi"><svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges"><rect x="2" y="1" width="6" height="7" fill="#2c6b1f"/><rect x="3" y="2" width="4" height="5" fill="#43a02c"/><rect x="4" y="3" width="2" height="3" fill="#8fe05a"/></svg></div>
+              <div class="gn">JÁ!</div><div class="gk">F3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dir">
+      <div class="panel">
+        <div class="phead"><span class="pt">Overlay</span><div class="hbtn">▴</div></div>
+        <div class="pbody">
+          <div class="opt"><label>Tamanho</label><select class="inp"><option selected>Ícone</option><option>Mini</option><option>Pequeno</option><option>Médio</option><option>Grande</option></select></div>
+          <div class="opt"><label>Organização</label><select class="inp"><option>Um embaixo</option><option selected>Lado a lado</option><option>Livre</option></select></div>
+          <div class="opt"><label>Posição</label><select class="inp"><option>Sup. direito</option><option>Sup. esquerdo</option><option>Inf. direito</option><option>Inf. esquerdo</option><option selected>Personalizada</option></select></div>
+          <div class="opt"><label>Tam. ícone</label><div class="slider"><span class="fill" style="width:18%"></span><span class="th" style="left:18%"></span></div><span class="val">24px</span></div>
+          <div class="opt"><label>Opacidade</label><div class="slider"><span class="fill" style="width:62%"></span><span class="th" style="left:62%"></span></div><span class="val">70%</span></div>
+          <div class="opt" style="padding-top:6px"><button class="btn full">Arrastar overlay</button></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="phead"><span class="pt">Som</span><div class="hbtn">▴</div></div>
+        <div class="pbody">
+          <div class="opt"><label>Volume</label><div class="slider"><span class="fill" style="width:45%"></span><span class="th" style="left:45%"></span></div><span class="val">45%</span></div>
+          <div class="opt" style="padding-top:4px"><button class="btn full">Testar som</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

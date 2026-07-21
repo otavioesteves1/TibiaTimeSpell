@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' file: data:">
+<style>
+  html, body {
+    margin: 0;
+    background: transparent;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    -webkit-user-select: none;
+  }
+  #wrap {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  body.horizontal #wrap { flex-direction: row; }
+  body.horizontal .card { width: 250px; flex: 0 0 auto; box-sizing: border-box; }
+
+  .card {
+    height: 52px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 7px 9px;
+    background: rgba(12, 12, 20, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 4px solid var(--c, #8b5cf6);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .cimg {
+    width: 36px;
+    height: 36px;
+    border-radius: 7px;
+    object-fit: cover;
+    flex: 0 0 auto;
+  }
+  .cbody {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+  }
+  .top { display: flex; align-items: center; gap: 8px; }
+  .key {
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.14);
+    padding: 2px 6px;
+    border-radius: 5px;
+    letter-spacing: 0.5px;
+  }
+  .name {
+    flex: 1;
+    font-size: 12px;
+    color: #cfcfe0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .time {
+    font-size: 19px;
+    font-weight: 800;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .bar {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+  }
+  .fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--c, #8b5cf6);
+  }
+  .card.preview { opacity: 0.75; }
+  .card.warn {
+    border-color: #ffcf3f;
+    border-left-color: #ffcf3f;
+    box-shadow: 0 0 12px rgba(255, 207, 63, 0.35);
+    animation: pulse 0.5s infinite alternate;
+  }
+  .card.warn .time { color: #ffcf3f; }
+  .card.warn .fill { background: #ffcf3f; }
+  .card.go {
+    border-color: #ff4d4d;
+    border-left-color: #ff4d4d;
+    background: rgba(120, 10, 10, 0.9);
+    animation: flash 0.25s infinite alternate;
+  }
+  .card.go .time { color: #fff; font-size: 15px; letter-spacing: 1px; }
+  .card.go .fill { background: #ff4d4d; }
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.02); } }
+  @keyframes flash {
+    from { background: rgba(150, 15, 15, 0.95); opacity: 1; }
+    to { background: rgba(60, 5, 5, 0.85); opacity: 0.3; }
+  }
+
+  /* tamanho mini: so icone + tecla + tempo, sem nome e sem barrinha; alerta = borda piscando */
+  body.mini #wrap { padding: 8px; gap: 6px; }
+  body.mini .card {
+    height: 36px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border-left-width: 3px;
+    gap: 6px;
+  }
+  body.mini .name, body.mini .bar { display: none; }
+  body.mini .cimg { width: 24px; height: 24px; border-radius: 5px; }
+  body.mini .key { font-size: 9px; padding: 2px 5px; }
+  body.mini .top { gap: 6px; }
+  body.mini .time { font-size: 15px; margin-left: auto; }
+  body.mini.horizontal .card { width: 130px; }
+  body.mini .card.warn {
+    box-shadow: none;
+    animation: miniWarn 0.4s infinite alternate;
+  }
+  body.mini .card.go { animation: miniGo 0.25s infinite alternate; }
+  body.mini .card.go .time { font-size: 11px; letter-spacing: 0.5px; }
+  body.mini .dh-title { font-size: 10px; }
+  body.mini .dh-sub { display: none; }
+  @keyframes miniWarn {
+    from { border-color: rgba(255, 207, 63, 0.15); }
+    to { border-color: #ffcf3f; }
+  }
+  @keyframes miniGo {
+    from { border-color: #ff4d4d; background: rgba(150, 15, 15, 0.95); opacity: 1; }
+    to { border-color: rgba(255, 77, 77, 0.15); background: rgba(60, 5, 5, 0.85); opacity: 0.3; }
+  }
+
+  /* tamanho icone: so a imagem, borda pisca no aviso; --icon = lado total do quadradinho */
+  body.icon #wrap { padding: 6px; gap: 6px; }
+  .icard {
+    width: var(--icon, 54px);
+    height: var(--icon, 54px);
+    box-sizing: border-box;
+    border: var(--iborder, 3px) solid var(--c, #8b5cf6);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(12, 12, 20, 0.85);
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icard img { width: 100%; height: 100%; object-fit: cover; }
+  .ikey {
+    font-size: calc(var(--icon, 54px) * 0.3);
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .icard.preview { opacity: 0.75; }
+  .icard.warn { animation: miniWarn 0.4s infinite alternate; }
+  .icard.go { animation: iconGo 0.25s infinite alternate; }
+  @keyframes iconGo {
+    from { border-color: #ff4d4d; opacity: 1; }
+    to { border-color: rgba(255, 77, 77, 0.1); opacity: 0.3; }
+  }
+
+  /* modo posicionar: janela inteira vira alca de arraste */
+  body.positioning #wrap {
+    -webkit-app-region: drag;
+    cursor: move;
+    outline: 2px dashed #8b5cf6;
+    outline-offset: -2px;
+    border-radius: 12px;
+    background: rgba(124, 92, 255, 0.12);
+  }
+  .drag-hint {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2px;
+    border-left-color: #8b5cf6;
+  }
+  .dh-title { font-size: 13px; font-weight: 700; color: #fff; }
+  .dh-sub { font-size: 10px; color: #bdbdd6; }
+</style>
+</head>
+<body>
+<div id="wrap"></div>
+<script src="overlay.js"></script>
+</body>
+</html>

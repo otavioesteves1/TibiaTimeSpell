@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Alerta de Magias Tibia</title>
+<style>
+  :root {
+    --bg0: #0f0f13;
+    --bg1: #17171d;
+    --card: #1d1d25;
+    --card2: #22222b;
+    --line: #2e2e39;
+    --line2: #3a3a48;
+    --txt: #d6d6e0;
+    --dim: #7d7d8c;
+    --gold: #f0c453;
+    --violet: #9b7bff;
+    --green: #4fd67a;
+    --red: #ff5164;
+    --slot: #0a0a0d;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 12px; color: var(--txt); -webkit-user-select: none; }
+  body { min-height: 100vh; padding: 22px;
+    display: flex; align-items: flex-start; justify-content: center;
+    background:
+      radial-gradient(900px 500px at 50% -120px, #23232d, transparent 70%),
+      linear-gradient(#111116, #0b0b0e); }
+
+  .app { width: 904px; background: linear-gradient(var(--bg1), var(--bg0));
+    border: 1px solid var(--line2); border-radius: 12px; overflow: hidden;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04); }
+
+  .top { height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
+    border-bottom: 1px solid var(--line); }
+  .sigil { width: 26px; height: 26px; border-radius: 7px; flex: none; position: relative;
+    background: conic-gradient(from 200deg, var(--violet), var(--gold), var(--violet));
+    box-shadow: 0 0 16px rgba(155,123,255,0.35); }
+  .sigil::after { content: ""; position: absolute; inset: 3px; border-radius: 4px;
+    background: #14141a; }
+  .sigil::before { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: 7px;
+    background: radial-gradient(circle at 50% 45%, rgba(255,255,255,0.25), transparent 60%); }
+  .top h1 { flex: 1; margin: 0; font-size: 15px; font-weight: 650; letter-spacing: 0.3px; color: #f0f0f6; }
+  .top .badge { font-size: 11px; color: var(--dim); padding: 4px 10px; border-radius: 20px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--line); }
+  .top .badge b { color: var(--green); }
+  .win { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center;
+    justify-content: center; color: var(--dim); cursor: pointer; }
+  .win:hover { background: rgba(255,255,255,0.06); color: var(--txt); }
+
+  .body { display: flex; gap: 16px; padding: 16px; }
+  .esq { flex: 1; min-width: 0; }
+  .dir { width: 268px; display: flex; flex-direction: column; gap: 14px; }
+
+  .sec-t { display: flex; align-items: center; gap: 8px; padding: 2px 4px 10px; }
+  .sec-t h2 { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--dim); }
+  .sec-t .rule { flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), transparent); }
+
+  /* magia card */
+  .list { display: flex; flex-direction: column; gap: 8px; }
+  .m { display: grid; grid-template-columns: 56px 1fr 44px 58px 24px 66px 40px;
+    gap: 12px; align-items: center; padding: 10px 12px; border-radius: 10px;
+    background: linear-gradient(var(--card2), var(--card));
+    border: 1px solid var(--line); position: relative; overflow: hidden; }
+  .m::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--mc, var(--violet)); }
+  .m:hover { border-color: var(--line2); }
+  .m.off { opacity: 0.42; }
+  /* barra de progresso na base */
+  .m .prog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(0,0,0,0.4); }
+  .m .prog i { display: block; height: 100%; background: var(--mc, var(--violet)); box-shadow: 0 0 8px var(--mc, var(--violet)); }
+
+  /* slot com anel de cooldown */
+  .ring { width: 50px; height: 50px; position: relative; border-radius: 10px; cursor: pointer; }
+  .ring .disc { position: absolute; inset: 0; border-radius: 10px; padding: 3px;
+    background: conic-gradient(var(--mc, var(--violet)) var(--deg,0deg), rgba(255,255,255,0.08) 0);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; }
+  .ring .inner { position: absolute; inset: 5px; border-radius: 7px;
+    background: radial-gradient(circle at 50% 38%, #17171e, var(--slot));
+    border: 1px solid #000; display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.7); }
+  .ring .inner svg { image-rendering: pixelated; filter: drop-shadow(0 1px 0 #000); }
+  .ring.rdy .disc { background: conic-gradient(var(--red) 360deg, var(--red) 0);
+    animation: rpulse 0.5s ease-in-out infinite alternate; }
+  @keyframes rpulse { to { opacity: 0.35; } }
+
+  .nmwrap { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .nmwrap .row1 { display: flex; align-items: center; gap: 8px; }
+  .sw { width: 32px; height: 18px; border-radius: 10px; position: relative; cursor: pointer; flex: none;
+    background: #101014; border: 1px solid var(--line); }
+  .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px;
+    border-radius: 50%; background: #5a5a68; transition: 0.16s; }
+  .sw.on { background: linear-gradient(90deg, #2a7a44, #1f5f34); border-color: #37945a; }
+  .sw.on::after { left: 16px; background: radial-gradient(circle at 40% 35%, #b3ffce, var(--green));
+    box-shadow: 0 0 6px rgba(79,214,122,0.7); }
+  .nm { font-size: 14px; font-weight: 600; color: #eaeaf2; }
+  .sub { font-size: 11px; color: var(--dim); }
+
+  .inp { width: 100%; font: inherit; padding: 7px 8px; border-radius: 7px; color: var(--txt);
+    background: var(--slot); border: 1px solid var(--line); outline: none; }
+  .inp:focus { border-color: var(--violet); box-shadow: 0 0 0 3px rgba(155,123,255,0.15); }
+  .inp.mid { text-align: center; }
+  .keycap { height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: var(--gold);
+    background: linear-gradient(#26262f, #1b1b22); border: 1px solid var(--line2);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08); }
+  .cor { width: 26px; height: 26px; padding: 3px; border-radius: 7px; cursor: pointer;
+    background: var(--slot); border: 1px solid var(--line); }
+  .cor i { display: block; width: 100%; height: 100%; border-radius: 3px; }
+
+  .st { text-align: right; font-weight: 700; font-size: 15px; color: var(--gold);
+    font-variant-numeric: tabular-nums; }
+  .st small { font-size: 10px; color: var(--dim); font-weight: 400; }
+  .st.agora { color: var(--red); text-shadow: 0 0 10px rgba(255,81,100,0.5);
+    animation: rpulse 0.5s ease-in-out infinite alternate; }
+
+  .acts { display: flex; gap: 5px; justify-content: flex-end; }
+  .ib { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; color: var(--dim); cursor: pointer;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--line); }
+  .ib:hover { color: var(--txt); border-color: var(--line2); }
+  .ib.del:hover { color: var(--red); border-color: rgba(255,81,100,0.4); }
+
+  .foot { display: flex; gap: 10px; padding-top: 12px; }
+  .btn { font: inherit; font-weight: 600; cursor: pointer; padding: 9px 16px; border-radius: 8px;
+    color: var(--txt); background: rgba(255,255,255,0.04); border: 1px solid var(--line2); }
+  .btn:hover { background: rgba(255,255,255,0.07); }
+  .btn.primary { color: #1a1206; border: none;
+    background: linear-gradient(135deg, #ffd979, var(--gold)); box-shadow: 0 4px 14px rgba(240,196,83,0.25); }
+  .btn.primary:hover { filter: brightness(1.06); }
+  .btn.full { width: 100%; justify-content: center; display: flex; }
+
+  .card { background: linear-gradient(var(--card2), var(--card)); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px; }
+  .card h3 { margin: 0 0 12px; font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--dim); }
+  .opt { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .opt > label { width: 84px; color: var(--dim); font-size: 11px; }
+  .opt .val { width: 42px; text-align: right; color: var(--gold); font-weight: 700; }
+  select.inp { cursor: pointer; } select.inp option { background: #1a1a20; }
+  .slider { flex: 1; height: 6px; border-radius: 3px; position: relative; cursor: pointer;
+    background: #101014; border: 1px solid var(--line); }
+  .slider .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px;
+    background: linear-gradient(90deg, var(--violet), #c4b0ff); }
+  .slider .th { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px;
+    border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(155,123,255,0.3), 0 2px 4px rgba(0,0,0,0.5); }
+
+  .game { height: 128px; border-radius: 10px; position: relative; overflow: hidden;
+    border: 1px solid #000;
+    background: repeating-linear-gradient(90deg, #3d5a2c 0 32px, #43602f 32px 64px),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0 32px, transparent 32px 64px); }
+  .gc { position: absolute; display: flex; align-items: center; gap: 7px; padding: 4px 8px 4px 4px;
+    border-radius: 8px; background: rgba(12,12,16,0.85); border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(2px); }
+  .gc .gs { width: 26px; height: 26px; border-radius: 5px; background: var(--slot);
+    display: flex; align-items: center; justify-content: center; }
+  .gc .gk { color: var(--gold); font-size: 10px; font-weight: 700; }
+  .gc .gt { color: #fff; font-weight: 700; font-size: 14px; }
+  .gc.a { left: 16px; top: 20px; box-shadow: 0 0 0 1px rgba(155,123,255,0.4); }
+  .gc.b { left: 16px; top: 66px; border: 2px solid var(--red); box-shadow: 0 0 16px rgba(255,81,100,0.5);
+    animation: rpulse 0.5s ease-in-out infinite alternate; }
+  .gc.b .gt { color: var(--red); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <span class="sigil"></span>
+    <h1>Alerta de Magias Tibia</h1>
+    <span class="badge"><b>2</b> ativas</span>
+    <div class="win">–</div>
+    <div class="win">✕</div>
+  </div>
+
+  <div class="body">
+    <div class="esq">
+      <div class="sec-t"><h2>Magias</h2><span class="rule"></span></div>
+      <div class="list">
+
+        <div class="m" style="--mc:#8b5cf6">
+          <div class="ring" style="--deg:207deg">
+            <div class="disc"></div>
+            <div class="inner"><svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges">
+              <rect x="4" y="0" width="2" height="1" fill="#ffe14a"/><rect x="3" y="1" width="1" height="2" fill="#ff9a2c"/><rect x="5" y="1" width="2" height="2" fill="#ffd23c"/><rect x="2" y="3" width="2" height="2" fill="#f2661d"/><rect x="4" y="3" width="3" height="2" fill="#ff9a2c"/><rect x="1" y="5" width="3" height="2" fill="#d63c12"/><rect x="4" y="5" width="3" height="2" fill="#f2661d"/><rect x="2" y="7" width="5" height="2" fill="#a52408"/></svg></div>
+          </div>
+          <div class="nmwrap"><div class="row1"><span class="sw on"></span><span class="nm">Flam</span></div><span class="sub">recarrega a cada 40s</span></div>
+          <div class="keycap">4</div>
+          <input class="inp mid" value="40">
+          <div class="cor"><i style="background:#8b5cf6"></i></div>
+          <div class="st">23<small>s</small></div>
+          <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+          <div class="prog"><i style="width:57%"></i></div>
+        </div>
+
+        <div class="m" style="--mc:#22c55e">
+          <div class="ring rdy">
+            <div class="disc"></div>
+            <div class="inner"><svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges">
+              <rect x="2" y="1" width="6" height="7" fill="#2c6b1f"/><rect x="3" y="2" width="4" height="5" fill="#43a02c"/><rect x="4" y="3" width="2" height="3" fill="#8fe05a"/></svg></div>
+          </div>
+          <div class="nmwrap"><div class="row1"><span class="sw on"></span><span class="nm">Croco</span></div><span class="sub">recarrega a cada 180s</span></div>
+          <div class="keycap">F3</div>
+          <input class="inp mid" value="180">
+          <div class="cor"><i style="background:#22c55e"></i></div>
+          <div class="st agora">AGORA!</div>
+          <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+          <div class="prog"><i style="width:100%;background:#ff5164;box-shadow:0 0 8px #ff5164"></i></div>
+        </div>
+
+        <div class="m off" style="--mc:#06b6d4">
+          <div class="ring">
+            <div class="disc"></div>
+            <div class="inner"><svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges">
+              <rect x="3" y="1" width="4" height="7" fill="#2f66a0"/><rect x="4" y="2" width="2" height="4" fill="#6fa8dc"/><rect x="4" y="1" width="2" height="1" fill="#bfe0ff"/></svg></div>
+          </div>
+          <div class="nmwrap"><div class="row1"><span class="sw"></span><span class="nm">Utura</span></div><span class="sub">desativada</span></div>
+          <div class="keycap">F7</div>
+          <input class="inp mid" value="120">
+          <div class="cor"><i style="background:#06b6d4"></i></div>
+          <div class="st">—</div>
+          <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+        </div>
+
+      </div>
+      <div class="foot">
+        <button class="btn primary">+ Adicionar magia</button>
+        <button class="btn">↻ Reiniciar todos</button>
+      </div>
+    </div>
+
+    <div class="dir">
+      <div class="card">
+        <h3>Overlay</h3>
+        <div class="opt"><label>Tamanho</label><select class="inp"><option>Ícone</option><option>Mini</option><option>Pequeno</option><option>Médio</option><option selected>Grande</option></select></div>
+        <div class="opt"><label>Organização</label><select class="inp"><option selected>Um embaixo</option><option>Lado a lado</option><option>Livre</option></select></div>
+        <div class="opt"><label>Posição</label><select class="inp"><option>Sup. direito</option><option>Sup. esquerdo</option><option>Inf. direito</option><option>Inf. esquerdo</option><option selected>Personalizada</option></select></div>
+        <div class="opt"><label>Tam. ícone</label><div class="slider"><span class="fill" style="width:18%"></span><span class="th" style="left:18%"></span></div><span class="val">24px</span></div>
+        <div class="opt"><label>Opacidade</label><div class="slider"><span class="fill" style="width:62%"></span><span class="th" style="left:62%"></span></div><span class="val">70%</span></div>
+        <div class="opt" style="padding-top:8px"><button class="btn full">Arrastar overlay</button></div>
+      </div>
+      <div class="card">
+        <h3>Som</h3>
+        <div class="opt"><label>Volume</label><div class="slider"><span class="fill" style="width:45%"></span><span class="th" style="left:45%"></span></div><span class="val">45%</span></div>
+        <div class="opt" style="padding-top:6px"><button class="btn full">Testar som</button></div>
+      </div>
+      <div class="card" style="padding:8px">
+        <div class="game">
+          <div class="gc a"><span class="gs"><svg width="20" height="20" viewBox="0 0 10 10" shape-rendering="crispEdges"><rect x="4" y="0" width="2" height="1" fill="#ffe14a"/><rect x="3" y="1" width="1" height="2" fill="#ff9a2c"/><rect x="5" y="1" width="2" height="2" fill="#ffd23c"/><rect x="2" y="3" width="2" height="2" fill="#f2661d"/><rect x="4" y="3" width="3" height="2" fill="#ff9a2c"/><rect x="1" y="5" width="3" height="2" fill="#d63c12"/><rect x="4" y="5" width="3" height="2" fill="#f2661d"/><rect x="2" y="7" width="5" height="2" fill="#a52408"/></svg></span><span class="gk">4</span><span class="gt">23s</span></div>
+          <div class="gc b"><span class="gs"><svg width="20" height="20" viewBox="0 0 10 10" shape-rendering="crispEdges"><rect x="2" y="1" width="6" height="7" fill="#2c6b1f"/><rect x="3" y="2" width="4" height="5" fill="#43a02c"/><rect x="4" y="3" width="2" height="3" fill="#8fe05a"/></svg></span><span class="gk">F3</span><span class="gt">AGORA!</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

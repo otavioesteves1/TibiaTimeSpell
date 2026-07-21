@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Alerta de Magias Tibia</title>
+<style>
+  :root {
+    --txt: #c0c0c0;
+    --dim: #8a8a8a;
+    --gold: #ffd83c;
+    --gold2: #c9a227;
+    --green: #4bd24b;
+    --red: #ff4040;
+    --slot-bg: #0e0e0e;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    font-family: Verdana, Tahoma, 'Segoe UI', sans-serif;
+    font-size: 11px;
+    color: var(--txt);
+    -webkit-user-select: none;
+  }
+  body {
+    min-height: 100vh;
+    padding: 20px;
+    display: flex; align-items: flex-start; justify-content: center;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"),
+      linear-gradient(#2b2b2b, #202020);
+  }
+
+  /* moldura em pedra, borda dupla estilo client */
+  .frame {
+    width: 900px;
+    padding: 4px;
+    background:
+      linear-gradient(#4a4a4a, #3a3a3a);
+    border: 2px solid;
+    border-color: #6a6a6a #1c1c1c #1c1c1c #6a6a6a;
+    box-shadow: 0 10px 34px rgba(0,0,0,0.7), inset 0 0 0 1px #2c2c2c;
+  }
+
+  .titlebar {
+    height: 24px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 5px 0 8px;
+    margin-bottom: 4px;
+    background: linear-gradient(#6d5a30, #4a3c1e);
+    border: 1px solid;
+    border-color: #8a733e #241c0d #241c0d #8a733e;
+  }
+  .titlebar .crest {
+    width: 14px; height: 14px; flex: none;
+    background:
+      radial-gradient(circle at 50% 40%, var(--gold), var(--gold2) 60%, #6b520f 100%);
+    border: 1px solid #2c2205;
+    transform: rotate(45deg);
+    box-shadow: 0 0 4px rgba(255,216,60,0.4);
+  }
+  .titlebar .tt {
+    flex: 1;
+    font-weight: bold; font-size: 12px;
+    color: #f2e2a8;
+    text-shadow: 1px 1px 0 #000;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .wbtn {
+    width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: #e8dca8; cursor: pointer;
+    background: linear-gradient(#5e4d29, #3d3117);
+    border: 1px solid; border-color: #7a6636 #201908 #201908 #7a6636;
+  }
+  .wbtn:active { border-color: #201908 #7a6636 #7a6636 #201908; }
+
+  .cols { display: flex; gap: 4px; align-items: flex-start; }
+  .esq { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .dir { width: 290px; display: flex; flex-direction: column; gap: 4px; }
+
+  /* painel */
+  .panel {
+    background: #3a3a3a;
+    border: 1px solid; border-color: #575757 #212121 #212121 #575757;
+  }
+  .phead {
+    height: 19px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 3px 0 6px;
+    background: linear-gradient(#565656, #3e3e3e);
+    border-bottom: 1px solid #232323;
+  }
+  .phead::before {
+    content: ""; width: 8px; height: 8px; flex: none;
+    background: radial-gradient(circle at 40% 40%, #d8d8d8, #7a7a7a 70%, #4a4a4a);
+    border: 1px solid #222; border-radius: 1px;
+  }
+  .phead .pt {
+    flex: 1; font-weight: bold; font-size: 10.5px;
+    color: #dcdcdc; text-shadow: 1px 1px 0 #000;
+  }
+  .hbtn {
+    width: 13px; height: 13px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; color: #cfcfcf;
+    background: linear-gradient(#525252, #3c3c3c);
+    border: 1px solid; border-color: #6a6a6a #262626 #262626 #6a6a6a;
+  }
+  .pbody { padding: 6px; background: #343434; }
+
+  /* cabecalho da tabela */
+  .cab, .row {
+    display: grid;
+    grid-template-columns: 24px 42px 1fr 46px 50px 26px 62px 44px;
+    gap: 6px; align-items: center;
+  }
+  .cab { padding: 1px 4px 6px; color: var(--dim); font-size: 10px; }
+
+  .row { padding: 5px 4px; }
+  .row + .row { border-top: 1px solid #2a2a2a; }
+  .rowbg {
+    background: linear-gradient(#3d3d3d, #363636);
+    border: 1px solid; border-color: #4d4d4d #262626 #262626 #4d4d4d;
+    margin-bottom: 3px;
+  }
+  .rowbg:hover { background: linear-gradient(#454545, #3b3b3b); }
+  .rowbg.off { opacity: 0.5; }
+
+  /* checkbox */
+  .chk {
+    width: 15px; height: 15px; cursor: pointer;
+    background: var(--slot-bg);
+    border: 1px solid; border-color: #111 #4a4a4a #4a4a4a #111;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chk.on { box-shadow: inset 0 0 5px rgba(75,210,75,0.35); }
+  .chk.on::after {
+    content: ""; width: 9px; height: 9px;
+    background: radial-gradient(circle at 40% 35%, #8fffa0, #26a326 70%);
+    border-radius: 1px; box-shadow: 0 0 4px rgba(75,210,75,0.8);
+  }
+
+  /* slot de item — inset escuro */
+  .slot {
+    width: 38px; height: 38px; position: relative;
+    background:
+      radial-gradient(circle at 50% 40%, #1c1c1c, #0a0a0a);
+    border: 2px solid; border-color: #101010 #3f3f3f #3f3f3f #101010;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .slot svg { image-rendering: pixelated; filter: drop-shadow(0 1px 0 #000); }
+  .slot .n {
+    position: absolute; right: 2px; bottom: 0;
+    color: #fff; font-size: 9px; font-weight: bold;
+    text-shadow: 1px 1px 0 #000, -1px 0 0 #000;
+  }
+
+  .inp {
+    width: 100%; font: inherit; padding: 5px 6px;
+    color: var(--txt); background: var(--slot-bg);
+    border: 1px solid; border-color: #111 #454545 #454545 #111;
+    outline: none;
+  }
+  .inp:focus { color: #fff; box-shadow: inset 0 0 0 1px var(--gold2); }
+  .inp.mid { text-align: center; }
+
+  .keycap {
+    height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 12px; color: var(--gold);
+    text-shadow: 1px 1px 0 #000;
+    background: linear-gradient(#565656, #3a3a3a);
+    border: 1px solid; border-color: #6e6e6e #1e1e1e #1e1e1e #6e6e6e;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+
+  .cor {
+    width: 24px; height: 24px; padding: 2px; cursor: pointer;
+    background: var(--slot-bg);
+    border: 1px solid; border-color: #111 #454545 #454545 #111;
+  }
+  .cor i { display: block; width: 100%; height: 100%; border: 1px solid rgba(0,0,0,0.5); }
+
+  .status {
+    text-align: center; font-weight: bold; font-size: 13px;
+    color: var(--gold); text-shadow: 1px 1px 0 #000;
+    font-variant-numeric: tabular-nums;
+  }
+  .status.agora {
+    color: var(--red);
+    text-shadow: 0 0 6px rgba(255,64,64,0.7), 1px 1px 0 #000;
+    animation: pisca 0.45s steps(2, jump-none) infinite;
+  }
+  @keyframes pisca { to { opacity: 0.25; } }
+
+  .acts { display: flex; gap: 4px; justify-content: flex-end; }
+  .ib {
+    width: 19px; height: 19px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #cfcfcf;
+    background: linear-gradient(#4e4e4e, #3a3a3a);
+    border: 1px solid; border-color: #666 #222 #222 #666;
+  }
+  .ib:hover { color: #fff; }
+  .ib.del:hover { color: var(--red); border-color: #7a3030 #200 #200 #7a3030; }
+  .ib:active { border-color: #222 #666 #666 #222; }
+
+  .foot { display: flex; gap: 5px; padding: 8px 4px 2px; }
+
+  .btn {
+    font: inherit; font-weight: bold; cursor: pointer;
+    padding: 6px 14px; color: #e8e8e8; text-shadow: 1px 1px 0 #000;
+    background: linear-gradient(#565656, #3c3c3c);
+    border: 1px solid; border-color: #6e6e6e #1e1e1e #1e1e1e #6e6e6e;
+  }
+  .btn:hover { color: #fff; background: linear-gradient(#606060, #424242); }
+  .btn:active { border-color: #1e1e1e #6e6e6e #6e6e6e #1e1e1e; }
+  .btn.gold {
+    color: #3a2c05;
+    background: linear-gradient(#ffe36a, #d0a92a);
+    border-color: #ffef9e #7a5c10 #7a5c10 #ffef9e;
+  }
+  .btn.gold:hover { background: linear-gradient(#ffec8a, #dcb636); }
+  .btn.full { width: 100%; justify-content: center; display: flex; }
+
+  /* opcoes */
+  .opt { display: flex; align-items: center; gap: 8px; padding: 4px 2px; }
+  .opt > label { width: 90px; color: var(--dim); }
+  .opt .val { width: 42px; text-align: right; color: var(--gold); font-weight: bold; }
+  select.inp { cursor: pointer; }
+  select.inp option { background: #222; }
+
+  /* slider entalhado */
+  .slider { flex: 1; height: 14px; position: relative; cursor: pointer;
+    background: var(--slot-bg);
+    border: 1px solid; border-color: #111 #454545 #454545 #111;
+  }
+  .slider .fill { position: absolute; left: 1px; top: 1px; bottom: 1px;
+    background: linear-gradient(#3fae3f, #1f6f1f); box-shadow: inset 0 1px 0 rgba(255,255,255,0.2); }
+  .slider .th { position: absolute; top: -3px; width: 11px; height: 16px;
+    background: linear-gradient(#e9e9e9, #9a9a9a);
+    border: 1px solid; border-color: #fff #333 #333 #fff; }
+
+  /* preview em jogo */
+  .prevbody { padding: 3px; }
+  .game {
+    height: 128px; position: relative; overflow: hidden;
+    border: 2px solid; border-color: #101010 #3f3f3f #3f3f3f #101010;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23g)' opacity='0.12'/%3E%3C/svg%3E"),
+      repeating-linear-gradient(90deg, #3d5a2c 0 32px, #43602f 32px 64px),
+      repeating-linear-gradient(0deg, #3d5a2c 0 32px, #43602f 32px 64px);
+    background-blend-mode: overlay, normal, normal;
+  }
+  .gc {
+    position: absolute; display: flex; align-items: center; gap: 5px;
+    padding: 2px 6px 2px 2px;
+    background: rgba(12,12,12,0.82);
+    border: 1px solid; border-color: #555 #000 #000 #555;
+  }
+  .gc .gs { width: 24px; height: 24px; background: #0a0a0a;
+    border: 1px solid #000; display: flex; align-items: center; justify-content: center; }
+  .gc .gk { color: var(--gold); font-size: 9px; font-weight: bold; text-shadow: 1px 1px 0 #000; }
+  .gc .gt { color: #fff; font-weight: bold; font-size: 13px; text-shadow: 1px 1px 0 #000; }
+  .gc.a { left: 14px; top: 16px; }
+  .gc.b { left: 14px; top: 60px; border: 2px solid var(--red);
+    animation: pisca 0.4s steps(2, jump-none) infinite; }
+  .gc.b .gt { color: var(--red); font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="titlebar">
+    <span class="crest"></span>
+    <span class="tt">Alerta de Magias Tibia</span>
+    <div class="wbtn">–</div>
+    <div class="wbtn">✕</div>
+  </div>
+
+  <div class="cols">
+    <div class="esq">
+      <div class="panel">
+        <div class="phead"><span class="pt">Magias</span><div class="hbtn">▴</div><div class="hbtn">✕</div></div>
+        <div class="pbody">
+          <div class="cab"><span></span><span>Item</span><span>Nome</span><span>Tecla</span><span>Tempo</span><span>Cor</span><span>Status</span><span></span></div>
+
+          <div class="row rowbg">
+            <div class="chk on"></div>
+            <div class="slot">
+              <svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                <rect x="4" y="0" width="2" height="1" fill="#ffe14a"/>
+                <rect x="3" y="1" width="1" height="2" fill="#ff9a2c"/><rect x="5" y="1" width="2" height="2" fill="#ffd23c"/>
+                <rect x="2" y="3" width="2" height="2" fill="#f2661d"/><rect x="4" y="3" width="3" height="2" fill="#ff9a2c"/>
+                <rect x="1" y="5" width="3" height="2" fill="#d63c12"/><rect x="4" y="5" width="3" height="2" fill="#f2661d"/>
+                <rect x="2" y="7" width="5" height="2" fill="#a52408"/><rect x="4" y="7" width="2" height="1" fill="#ffd23c"/>
+                <rect x="3" y="9" width="3" height="1" fill="#6b1704"/>
+              </svg>
+              <span class="n">40</span>
+            </div>
+            <input class="inp" value="Flam">
+            <div class="keycap">4</div>
+            <input class="inp mid" value="40">
+            <div class="cor"><i style="background:#8b5cf6"></i></div>
+            <div class="status">23s</div>
+            <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+          </div>
+
+          <div class="row rowbg">
+            <div class="chk on"></div>
+            <div class="slot">
+              <svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                <rect x="2" y="1" width="6" height="7" fill="#2c6b1f"/>
+                <rect x="3" y="2" width="4" height="5" fill="#43a02c"/>
+                <rect x="4" y="3" width="2" height="3" fill="#8fe05a"/>
+                <rect x="2" y="1" width="1" height="1" fill="#1a4210"/><rect x="7" y="1" width="1" height="1" fill="#1a4210"/>
+                <rect x="3" y="8" width="4" height="1" fill="#173a0e"/>
+              </svg>
+              <span class="n">180</span>
+            </div>
+            <input class="inp" value="Croco">
+            <div class="keycap">F3</div>
+            <input class="inp mid" value="180">
+            <div class="cor"><i style="background:#22c55e"></i></div>
+            <div class="status agora">AGORA!</div>
+            <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+          </div>
+
+          <div class="row rowbg off">
+            <div class="chk"></div>
+            <div class="slot">
+              <svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                <rect x="3" y="1" width="4" height="7" fill="#2f66a0"/>
+                <rect x="4" y="2" width="2" height="4" fill="#6fa8dc"/>
+                <rect x="4" y="1" width="2" height="1" fill="#bfe0ff"/>
+                <rect x="4" y="7" width="2" height="1" fill="#204b70"/>
+              </svg>
+              <span class="n">120</span>
+            </div>
+            <input class="inp" value="Utura">
+            <div class="keycap">F7</div>
+            <input class="inp mid" value="120">
+            <div class="cor"><i style="background:#06b6d4"></i></div>
+            <div class="status">—</div>
+            <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+          </div>
+
+          <div class="foot">
+            <button class="btn gold">+ Adicionar magia</button>
+            <button class="btn">↻ Reiniciar todos</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="phead"><span class="pt">Prévia no jogo</span><div class="hbtn">▴</div></div>
+        <div class="pbody prevbody">
+          <div class="game">
+            <div class="gc a">
+              <span class="gs"><svg width="18" height="18" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                <rect x="4" y="0" width="2" height="1" fill="#ffe14a"/><rect x="3" y="1" width="1" height="2" fill="#ff9a2c"/><rect x="5" y="1" width="2" height="2" fill="#ffd23c"/>
+                <rect x="2" y="3" width="2" height="2" fill="#f2661d"/><rect x="4" y="3" width="3" height="2" fill="#ff9a2c"/><rect x="1" y="5" width="3" height="2" fill="#d63c12"/><rect x="4" y="5" width="3" height="2" fill="#f2661d"/><rect x="2" y="7" width="5" height="2" fill="#a52408"/>
+              </svg></span>
+              <span class="gk">4</span><span class="gt">23s</span>
+            </div>
+            <div class="gc b">
+              <span class="gs"><svg width="18" height="18" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                <rect x="2" y="1" width="6" height="7" fill="#2c6b1f"/><rect x="3" y="2" width="4" height="5" fill="#43a02c"/><rect x="4" y="3" width="2" height="3" fill="#8fe05a"/>
+              </svg></span>
+              <span class="gk">F3</span><span class="gt">AGORA!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dir">
+      <div class="panel">
+        <div class="phead"><span class="pt">Overlay</span><div class="hbtn">▴</div></div>
+        <div class="pbody">
+          <div class="opt"><label>Tamanho</label><select class="inp"><option>Ícone</option><option>Mini</option><option>Pequeno</option><option>Médio</option><option selected>Grande</option></select></div>
+          <div class="opt"><label>Organização</label><select class="inp"><option selected>Um embaixo do outro</option><option>Lado a lado</option><option>Livre</option></select></div>
+          <div class="opt"><label>Posição</label><select class="inp"><option>Superior direito</option><option>Superior esquerdo</option><option>Inferior direito</option><option>Inferior esquerdo</option><option selected>Personalizada</option></select></div>
+          <div class="opt"><label>Tam. ícone</label><div class="slider"><span class="fill" style="width:18%"></span><span class="th" style="left:18%"></span></div><span class="val">24px</span></div>
+          <div class="opt"><label>Opacidade</label><div class="slider"><span class="fill" style="width:62%"></span><span class="th" style="left:62%"></span></div><span class="val">70%</span></div>
+          <div class="opt" style="padding-top:6px"><button class="btn full">Arrastar overlay</button></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="phead"><span class="pt">Som</span><div class="hbtn">▴</div></div>
+        <div class="pbody">
+          <div class="opt"><label>Volume</label><div class="slider"><span class="fill" style="width:45%"></span><span class="th" style="left:45%"></span></div><span class="val">45%</span></div>
+          <div class="opt" style="padding-top:4px"><button class="btn full">Testar som</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

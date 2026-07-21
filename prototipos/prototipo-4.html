@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Alerta de Magias Tibia</title>
+<style>
+  :root {
+    --bg: #262626;
+    --panel: #3a3a3a;
+    --panel2: #333333;
+    --well: #232323;
+    --hi: #5c5c5c;
+    --lo: #161616;
+    --txt: #c8c8c8;
+    --txt-dim: #909090;
+    --gold: #d8c85a;
+    --green: #38b438;
+    --red: #ff3b3b;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    font-family: Tahoma, Verdana, 'Segoe UI', sans-serif;
+    font-size: 11px;
+    color: var(--txt);
+    -webkit-user-select: none;
+  }
+  body {
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.10) 0 1px, transparent 1px 3px),
+      radial-gradient(1200px 600px at 50% -100px, #303030, #222222);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 18px;
+  }
+
+  /* ---- chanfro estilo client ---- */
+  .out {
+    border: 1px solid;
+    border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+  }
+  .in {
+    border: 1px solid;
+    border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+  }
+
+  .janela {
+    width: 920px;
+    background: var(--panel);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+    padding: 3px;
+  }
+
+  /* ---- barra de titulo ---- */
+  .titlebar {
+    height: 20px;
+    background: linear-gradient(#5a5a5a, #3d3d3d);
+    display: flex;
+    align-items: center;
+    padding: 0 4px 0 6px;
+    gap: 6px;
+    margin-bottom: 3px;
+  }
+  .titlebar .tt {
+    flex: 1;
+    font-weight: bold;
+    font-size: 11px;
+    color: #dcdcdc;
+    text-shadow: 1px 1px 0 #000;
+    letter-spacing: 0.3px;
+  }
+  .wbtn {
+    width: 14px;
+    height: 14px;
+    background: #4a4a4a;
+    color: #cfcfcf;
+    font-size: 9px;
+    line-height: 12px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .wbtn:active { border-color: var(--lo) var(--hi) var(--hi) var(--lo); }
+
+  .cols { display: flex; gap: 3px; align-items: flex-start; }
+  .col-esq { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .col-dir { width: 292px; display: flex; flex-direction: column; gap: 3px; }
+
+  /* ---- paineis ---- */
+  .painel { background: var(--panel); padding: 2px; }
+  .phead {
+    height: 16px;
+    background: linear-gradient(#525252, #3b3b3b);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 3px 0 5px;
+    margin-bottom: 2px;
+  }
+  .phead .dot {
+    width: 7px; height: 7px;
+    background: #6d6d6d;
+    border: 1px solid;
+    border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+  }
+  .phead .pt {
+    flex: 1;
+    font-weight: bold;
+    font-size: 10px;
+    color: #cfcfcf;
+    text-shadow: 1px 1px 0 #000;
+  }
+  .pbtn {
+    width: 12px; height: 12px;
+    background: #4a4a4a;
+    color: #bdbdbd;
+    font-size: 8px;
+    line-height: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .pbody { background: var(--panel2); padding: 5px; }
+
+  /* ---- lista de magias ---- */
+  .cab {
+    display: grid;
+    grid-template-columns: 22px 40px 1fr 44px 52px 30px 62px 46px;
+    gap: 5px;
+    padding: 2px 4px 4px;
+    color: var(--txt-dim);
+    font-size: 10px;
+  }
+  .linha {
+    display: grid;
+    grid-template-columns: 22px 40px 1fr 44px 52px 30px 62px 46px;
+    gap: 5px;
+    align-items: center;
+    padding: 4px;
+    background: var(--panel2);
+  }
+  .linha + .linha { border-top: 1px solid #2a2a2a; }
+  .linha:hover { background: #383838; }
+  .linha.off { opacity: 0.55; }
+
+  /* checkbox do client */
+  .chk {
+    width: 14px; height: 14px;
+    background: var(--well);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .chk .on {
+    width: 8px; height: 8px;
+    background: linear-gradient(#4ade4a, #1f8f1f);
+    box-shadow: 0 0 3px rgba(60,220,60,0.6);
+  }
+
+  /* slot de item */
+  .slot {
+    width: 36px; height: 36px;
+    background: var(--well);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .slot svg { image-rendering: pixelated; }
+  .slot .qtd {
+    position: absolute;
+    right: 2px; bottom: 1px;
+    color: var(--gold);
+    font-size: 9px;
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #000;
+  }
+
+  .campo {
+    background: var(--well);
+    color: var(--txt);
+    border: 1px solid;
+    border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+    font: inherit;
+    padding: 4px 6px;
+    width: 100%;
+    outline: none;
+  }
+  .campo:focus { color: #fff; background: #1d1d1d; }
+
+  /* tecla estilo slot de hotkey */
+  .keycap {
+    height: 26px;
+    background: linear-gradient(#4e4e4e, #383838);
+    border: 1px solid;
+    border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: var(--gold);
+    text-shadow: 1px 1px 0 #000;
+    font-size: 11px;
+  }
+
+  .tempo { text-align: center; color: var(--gold); font-weight: bold; }
+
+  .cor {
+    width: 22px; height: 22px;
+    padding: 2px;
+    background: var(--well);
+    border: 1px solid;
+    border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+    cursor: pointer;
+  }
+  .cor i { display: block; width: 100%; height: 100%; }
+
+  .status { text-align: center; font-weight: bold; color: var(--gold); text-shadow: 1px 1px 0 #000; }
+  .status.agora {
+    color: var(--red);
+    animation: pisca 0.45s steps(2, jump-none) infinite;
+  }
+  @keyframes pisca { 0% { opacity: 1; } 100% { opacity: 0.25; } }
+
+  .acoes { display: flex; gap: 3px; justify-content: flex-end; }
+  .mini {
+    width: 18px; height: 18px;
+    background: #454545;
+    color: #cfcfcf;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .mini:hover { background: #525252; color: #fff; }
+  .mini:active { border-color: var(--lo) var(--hi) var(--hi) var(--lo); }
+
+  .rodape { display: flex; gap: 4px; padding: 5px 4px 2px; }
+
+  .botao {
+    background: linear-gradient(#535353, #3c3c3c);
+    border: 1px solid;
+    border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+    color: #dcdcdc;
+    font: inherit;
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #000;
+    padding: 5px 12px;
+    cursor: pointer;
+  }
+  .botao:hover { color: #fff; }
+  .botao:active { border-color: var(--lo) var(--hi) var(--hi) var(--lo); background: #383838; }
+  .botao.verde { color: #7ee87e; }
+
+  /* ---- controles do painel direito ---- */
+  .opt { display: flex; align-items: center; gap: 6px; padding: 3px 2px; }
+  .opt label { width: 92px; color: var(--txt-dim); }
+  .opt .val { width: 40px; text-align: right; color: var(--gold); font-weight: bold; }
+
+  select.campo { padding: 3px 4px; cursor: pointer; }
+  select.campo option { background: #2a2a2a; }
+
+  /* slider estilo barra do client */
+  .trilho {
+    flex: 1;
+    height: 12px;
+    background: var(--well);
+    position: relative;
+    cursor: pointer;
+  }
+  .trilho .fill {
+    position: absolute;
+    left: 1px; top: 1px; bottom: 1px;
+    background: linear-gradient(#2e8f2e, #1c5f1c);
+  }
+  .trilho .thumb {
+    position: absolute;
+    top: -2px;
+    width: 10px; height: 14px;
+    background: linear-gradient(#5c5c5c, #414141);
+    border: 1px solid;
+    border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+  }
+
+  /* preview do overlay em jogo */
+  .game {
+    height: 132px;
+    background:
+      radial-gradient(80px 40px at 70% 30%, rgba(60,120,40,0.5), transparent),
+      repeating-conic-gradient(#3f5a2e 0% 25%, #465f33 0% 50%) 0 0/16px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .gcard {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(20,20,20,0.85);
+    border: 1px solid;
+    padding: 2px 5px 2px 2px;
+  }
+  .gcard .gslot { width: 22px; height: 22px; background: var(--well); display: flex; align-items: center; justify-content: center; }
+  .gcard .gkey { color: var(--gold); font-size: 9px; font-weight: bold; text-shadow: 1px 1px 0 #000; }
+  .gcard .gtime { color: #fff; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 0 #000; }
+  .gcard.c1 { left: 12px; top: 14px; border-color: var(--hi) var(--lo) var(--lo) var(--hi); }
+  .gcard.c2 {
+    left: 12px; top: 58px;
+    border: 2px solid var(--red);
+    animation: piscab 0.4s steps(2, jump-none) infinite;
+  }
+  .gcard.c2 .gtime { color: var(--red); font-size: 10px; }
+  @keyframes piscab { 0% { opacity: 1; } 100% { opacity: 0.3; } }
+  .gmsg {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 8px;
+    text-align: center;
+    color: var(--red);
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    animation: pisca 0.45s steps(2, jump-none) infinite;
+  }
+</style>
+</head>
+<body>
+<div class="janela out">
+  <div class="titlebar in">
+    <span class="tt">Alerta de Magias Tibia</span>
+    <div class="wbtn out">–</div>
+    <div class="wbtn out">✕</div>
+  </div>
+
+  <div class="cols">
+    <!-- ============ COLUNA ESQUERDA: MAGIAS ============ -->
+    <div class="col-esq">
+      <div class="painel out">
+        <div class="phead in">
+          <span class="dot"></span>
+          <span class="pt">Magias</span>
+          <div class="pbtn out">▴</div>
+          <div class="pbtn out">✕</div>
+        </div>
+        <div class="pbody in">
+          <div class="cab">
+            <span></span><span>Item</span><span>Nome</span><span>Tecla</span><span>Tempo</span><span>Cor</span><span>Status</span><span></span>
+          </div>
+
+          <div class="linha">
+            <div class="chk in"><span class="on"></span></div>
+            <div class="slot in">
+              <svg width="28" height="28" viewBox="0 0 8 8" shape-rendering="crispEdges">
+                <rect x="3" y="0" width="2" height="1" fill="#f7d23c"/>
+                <rect x="2" y="1" width="1" height="2" fill="#f7a52c"/><rect x="4" y="1" width="2" height="2" fill="#f7d23c"/>
+                <rect x="1" y="3" width="2" height="2" fill="#e8641f"/><rect x="3" y="3" width="3" height="2" fill="#f7a52c"/>
+                <rect x="1" y="5" width="5" height="2" fill="#c73a12"/><rect x="3" y="5" width="2" height="1" fill="#f7d23c"/>
+                <rect x="2" y="7" width="4" height="1" fill="#8f2408"/>
+              </svg>
+              <span class="qtd">40</span>
+            </div>
+            <input class="campo" value="Flam">
+            <div class="keycap">4</div>
+            <input class="campo" style="text-align:center" value="40">
+            <div class="cor"><i style="background:#8b5cf6"></i></div>
+            <div class="status">23s</div>
+            <div class="acoes">
+              <div class="mini out" title="Reiniciar">↻</div>
+              <div class="mini out" title="Remover">✕</div>
+            </div>
+          </div>
+
+          <div class="linha">
+            <div class="chk in"><span class="on"></span></div>
+            <div class="slot in">
+              <svg width="28" height="28" viewBox="0 0 8 8" shape-rendering="crispEdges">
+                <rect x="1" y="1" width="6" height="6" fill="#2e6b23"/>
+                <rect x="2" y="2" width="4" height="4" fill="#43a02c"/>
+                <rect x="3" y="3" width="2" height="2" fill="#8fe05a"/>
+                <rect x="1" y="1" width="1" height="1" fill="#1d4716"/><rect x="6" y="6" width="1" height="1" fill="#1d4716"/>
+              </svg>
+              <span class="qtd">180</span>
+            </div>
+            <input class="campo" value="Croco">
+            <div class="keycap">F3</div>
+            <input class="campo" style="text-align:center" value="180">
+            <div class="cor"><i style="background:#22c55e"></i></div>
+            <div class="status agora">AGORA!</div>
+            <div class="acoes">
+              <div class="mini out" title="Reiniciar">↻</div>
+              <div class="mini out" title="Remover">✕</div>
+            </div>
+          </div>
+
+          <div class="linha off">
+            <div class="chk in"></div>
+            <div class="slot in">
+              <svg width="28" height="28" viewBox="0 0 8 8" shape-rendering="crispEdges">
+                <rect x="2" y="1" width="4" height="6" fill="#3b6ea5"/>
+                <rect x="3" y="2" width="2" height="3" fill="#6fa8dc"/>
+                <rect x="3" y="6" width="2" height="1" fill="#274b70"/>
+              </svg>
+              <span class="qtd">120</span>
+            </div>
+            <input class="campo" value="Utura">
+            <div class="keycap">F7</div>
+            <input class="campo" style="text-align:center" value="120">
+            <div class="cor"><i style="background:#06b6d4"></i></div>
+            <div class="status">—</div>
+            <div class="acoes">
+              <div class="mini out" title="Reiniciar">↻</div>
+              <div class="mini out" title="Remover">✕</div>
+            </div>
+          </div>
+
+          <div class="rodape">
+            <button class="botao verde">+ Adicionar magia</button>
+            <button class="botao">↻ Reiniciar todos</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- preview em jogo -->
+      <div class="painel out">
+        <div class="phead in">
+          <span class="dot"></span>
+          <span class="pt">Prévia no jogo</span>
+          <div class="pbtn out">▴</div>
+        </div>
+        <div class="pbody in" style="padding:2px">
+          <div class="game in">
+            <div class="gcard c1">
+              <span class="gslot in">
+                <svg width="16" height="16" viewBox="0 0 8 8" shape-rendering="crispEdges">
+                  <rect x="3" y="0" width="2" height="1" fill="#f7d23c"/>
+                  <rect x="2" y="1" width="1" height="2" fill="#f7a52c"/><rect x="4" y="1" width="2" height="2" fill="#f7d23c"/>
+                  <rect x="1" y="3" width="2" height="2" fill="#e8641f"/><rect x="3" y="3" width="3" height="2" fill="#f7a52c"/>
+                  <rect x="1" y="5" width="5" height="2" fill="#c73a12"/>
+                </svg>
+              </span>
+              <span class="gkey">4</span>
+              <span class="gtime">23s</span>
+            </div>
+            <div class="gcard c2">
+              <span class="gslot in">
+                <svg width="16" height="16" viewBox="0 0 8 8" shape-rendering="crispEdges">
+                  <rect x="1" y="1" width="6" height="6" fill="#2e6b23"/>
+                  <rect x="2" y="2" width="4" height="4" fill="#43a02c"/>
+                  <rect x="3" y="3" width="2" height="2" fill="#8fe05a"/>
+                </svg>
+              </span>
+              <span class="gkey">F3</span>
+              <span class="gtime">AGORA!</span>
+            </div>
+            <div class="gmsg">Usa a magia! (F3)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ COLUNA DIREITA: OVERLAY E SOM ============ -->
+    <div class="col-dir">
+      <div class="painel out">
+        <div class="phead in">
+          <span class="dot"></span>
+          <span class="pt">Overlay</span>
+          <div class="pbtn out">▴</div>
+        </div>
+        <div class="pbody in">
+          <div class="opt">
+            <label>Tamanho</label>
+            <select class="campo">
+              <option selected>Ícone</option><option>Mini</option><option>Pequeno</option><option>Médio</option><option>Grande</option>
+            </select>
+          </div>
+          <div class="opt">
+            <label>Organização</label>
+            <select class="campo">
+              <option selected>Um embaixo do outro</option><option>Lado a lado</option><option>Livre</option>
+            </select>
+          </div>
+          <div class="opt">
+            <label>Posição</label>
+            <select class="campo">
+              <option>Superior direito</option><option>Superior esquerdo</option><option>Inferior direito</option><option>Inferior esquerdo</option><option selected>Personalizada</option>
+            </select>
+          </div>
+          <div class="opt">
+            <label>Tam. do ícone</label>
+            <div class="trilho in"><span class="fill" style="width:18%"></span><span class="thumb" style="left:18%"></span></div>
+            <span class="val">24px</span>
+          </div>
+          <div class="opt">
+            <label>Opacidade</label>
+            <div class="trilho in"><span class="fill" style="width:62%"></span><span class="thumb" style="left:62%"></span></div>
+            <span class="val">70%</span>
+          </div>
+          <div class="opt" style="padding-top:6px">
+            <button class="botao" style="width:100%">Arrastar overlay</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="painel out">
+        <div class="phead in">
+          <span class="dot"></span>
+          <span class="pt">Som</span>
+          <div class="pbtn out">▴</div>
+        </div>
+        <div class="pbody in">
+          <div class="opt">
+            <label>Volume</label>
+            <div class="trilho in"><span class="fill" style="width:0%"></span><span class="thumb" style="left:0%"></span></div>
+            <span class="val">0%</span>
+          </div>
+          <div class="opt" style="padding-top:4px">
+            <button class="botao" style="width:100%">Testar som</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

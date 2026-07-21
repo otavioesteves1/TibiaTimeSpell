@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Alerta de Magias Tibia</title>
+<style>
+/* ============ PROTÓTIPO 2 — MINIMAL PRO ============ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0c0c;
+  --panel: #111111;
+  --line: #1f1f1f;
+  --line2: #2b2b2b;
+  --txt: #ececec;
+  --mut: #9c9c9c;
+  --dim: #6e6e6e;
+  --acc: #f0a020;
+  --acc-dim: rgba(240, 160, 32, 0.14);
+  --red: #ef4444;
+}
+
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  -webkit-user-select: none;
+}
+
+/* ---------- topbar ---------- */
+
+.topbar {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.title { display: flex; align-items: center; gap: 10px; }
+.title h1 { font-size: 13.5px; font-weight: 600; letter-spacing: 0.2px; }
+
+.mark {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #262626, #191919);
+  border: 1px solid var(--line2);
+  display: grid; place-items: center;
+}
+.mark svg { width: 13px; height: 13px; fill: var(--acc); }
+
+.tb-actions { display: flex; gap: 8px; }
+
+/* ---------- botões ---------- */
+
+.btn {
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line2);
+  background: transparent;
+  color: var(--mut);
+  font-family: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+.btn:hover { color: var(--txt); border-color: #3a3a3a; background: rgba(255, 255, 255, 0.03); }
+.btn svg { width: 13px; height: 13px; }
+
+.btn.primary {
+  background: var(--acc);
+  border-color: var(--acc);
+  color: #171006;
+  font-weight: 600;
+}
+.btn.primary:hover { background: #ffb63a; border-color: #ffb63a; color: #171006; }
+
+.btn.tiny { height: 26px; padding: 0 10px; font-size: 12px; }
+
+/* ---------- conteúdo ---------- */
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 18px 20px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sec-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 10.5px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+.count {
+  background: #1a1a1a;
+  border: 1px solid var(--line);
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0;
+  color: var(--mut);
+}
+
+/* ---------- tabela ---------- */
+
+.table {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.thead, .trow {
+  display: grid;
+  grid-template-columns: 38px 36px 1fr 56px 62px 34px 74px 56px;
+  gap: 10px;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.thead {
+  height: 32px;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--dim);
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.trow {
+  height: 46px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.1s;
+}
+.trow:last-child { border-bottom: none; }
+.trow:hover { background: rgba(255, 255, 255, 0.02); }
+
+.trow.off .thumb,
+.trow.off .in,
+.trow.off .key,
+.trow.off input[type="color"],
+.trow.off .st { opacity: 0.38; }
+
+/* miniatura */
+
+.thumb {
+  width: 34px; height: 34px;
+  border-radius: 6px;
+  border: 1px solid var(--line2);
+  background: #161616;
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: border-color 0.12s;
+}
+.thumb svg { width: 16px; height: 16px; }
+.thumb:hover { border-color: var(--acc); }
+
+.i-flam svg  { fill: #b18cff; }
+.i-croco svg { stroke: #7ecb8f; fill: none; stroke-width: 2.1; stroke-linecap: round; }
+.i-utura svg { fill: #7fb1f5; }
+
+/* inputs */
+
+.in {
+  width: 100%;
+  height: 28px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--txt);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 0 8px;
+  outline: none;
+  transition: border-color 0.12s, background 0.12s;
+}
+.in:hover { border-color: var(--line2); background: #141414; }
+.in:focus { border-color: var(--acc); background: #141414; }
+
+.key {
+  width: 100%;
+  height: 26px;
+  background: #171717;
+  border: 1px solid var(--line2);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  color: #d6d6d6;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color 0.12s;
+}
+.key:focus { border-color: var(--acc); }
+
+.num { text-align: center; font-variant-numeric: tabular-nums; }
+.num::-webkit-inner-spin-button { display: none; }
+
+input[type="color"] {
+  width: 26px; height: 26px;
+  border-radius: 5px;
+  border: 1px solid var(--line2);
+  background: #161616;
+  padding: 0;
+  cursor: pointer;
+  transition: border-color 0.12s;
+}
+input[type="color"]:hover { border-color: var(--acc); }
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 3px; }
+input[type="color"]::-webkit-color-swatch { border: none; border-radius: 3px; }
+
+/* status */
+
+.st {
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #c9c9c9;
+}
+.st.go {
+  color: var(--red);
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  animation: blink 0.8s ease-in-out infinite;
+}
+@keyframes blink { 50% { opacity: 0.25; } }
+.st.idle { color: var(--dim); font-weight: 400; }
+
+/* ações */
+
+.acts { display: flex; gap: 4px; justify-content: flex-end; }
+
+.ib {
+  width: 26px; height: 26px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: var(--mut);
+  font-family: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: background 0.12s, color 0.12s, opacity 0.12s;
+}
+.trow:hover .ib, .ib:focus-visible { opacity: 1; }
+.ib:hover { background: #1d1d1d; color: var(--txt); }
+.ib.del:hover { color: var(--red); background: rgba(239, 68, 68, 0.1); }
+
+/* ---------- switch ---------- */
+
+.switch { position: relative; display: inline-block; width: 32px; height: 18px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .tk {
+  position: absolute; inset: 0;
+  background: #262626;
+  border: 1px solid var(--line2);
+  border-radius: 18px;
+  transition: background 0.14s, border-color 0.14s;
+}
+.switch .tk::before {
+  content: '';
+  position: absolute;
+  width: 12px; height: 12px;
+  left: 2px; top: 2px;
+  background: #8a8a8a;
+  border-radius: 50%;
+  transition: transform 0.14s, background 0.14s;
+}
+.switch input:checked + .tk { background: var(--acc); border-color: var(--acc); }
+.switch input:checked + .tk::before { transform: translateX(14px); background: #171006; }
+
+/* ---------- configurações ---------- */
+
+.fgrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 780px) { .fgrid { grid-template-columns: repeat(2, 1fr); } }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > span { font-size: 11px; color: var(--mut); }
+
+select {
+  height: 30px;
+  width: 100%;
+  background: #141414;
+  border: 1px solid var(--line2);
+  border-radius: 6px;
+  color: var(--txt);
+  font-family: inherit;
+  font-size: 12.5px;
+  padding: 0 26px 0 10px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7" viewBox="0 0 10 7"><path d="M1 1l4 4 4-4" stroke="%236e6e6e" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  transition: border-color 0.12s;
+}
+select:hover { border-color: #3a3a3a; }
+select:focus { border-color: var(--acc); }
+
+.field .btn { height: 30px; width: 100%; }
+
+/* sliders */
+
+.sgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 780px) { .sgrid { grid-template-columns: 1fr; } }
+
+.sl { display: flex; flex-direction: column; gap: 8px; }
+.sl-label { display: flex; align-items: baseline; justify-content: space-between; }
+.sl-label span:first-child { font-size: 11px; color: var(--mut); }
+.sl-label .val {
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--acc);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 16px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--acc) var(--fill), #262626 var(--fill));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px; height: 12px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: #ededed;
+  border: none;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px var(--acc-dim);
+}
+
+.vol { display: flex; align-items: center; gap: 8px; }
+.vol input[type="range"] { flex: 1; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="title">
+    <div class="mark">
+      <svg viewBox="0 0 24 24"><path d="M13 2 4.6 13.4c-.3.4 0 1 .5 1H10l-1.8 7.1c-.1.6.6.9 1 .5L19.4 10c.3-.4 0-1-.5-1H14l1.9-6.4c.2-.6-.5-1-1-.6z"/></svg>
+    </div>
+    <h1>Alerta de Magias Tibia</h1>
+  </div>
+  <div class="tb-actions">
+    <button class="btn">↻ Reiniciar todos</button>
+    <button class="btn primary">+ Adicionar magia</button>
+  </div>
+</header>
+
+<main>
+
+  <section>
+    <div class="sec-label">Magias <span class="count">3</span></div>
+
+    <div class="table">
+      <div class="thead">
+        <span>Ativa</span><span>Img</span><span>Magia</span><span>Tecla</span>
+        <span>Tempo</span><span>Cor</span><span>Status</span><span></span>
+      </div>
+
+      <div class="trow">
+        <label class="switch"><input type="checkbox" checked><span class="tk"></span></label>
+        <button class="thumb i-flam" title="Imagem da magia">
+          <svg viewBox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67z"/></svg>
+        </button>
+        <input class="in" value="Flam" maxlength="40">
+        <input class="key" value="4" maxlength="12">
+        <input class="in num" type="number" value="40" min="2" max="3600">
+        <input type="color" value="#8b5cf6">
+        <span class="st">23s</span>
+        <div class="acts">
+          <button class="ib" title="Reiniciar">↻</button>
+          <button class="ib del" title="Remover">✕</button>
+        </div>
+      </div>
+
+      <div class="trow">
+        <label class="switch"><input type="checkbox" checked><span class="tk"></span></label>
+        <button class="thumb i-croco" title="Imagem da magia">
+          <svg viewBox="0 0 24 24"><path d="M6 4c3 4 3 12 0 16M12 3c3 4.5 3 13.5 0 18M18 4c3 4 3 12 0 16"/></svg>
+        </button>
+        <input class="in" value="Croco" maxlength="40">
+        <input class="key" value="F3" maxlength="12">
+        <input class="in num" type="number" value="180" min="2" max="3600">
+        <input type="color" value="#22c55e">
+        <span class="st go">AGORA!</span>
+        <div class="acts">
+          <button class="ib" title="Reiniciar">↻</button>
+          <button class="ib del" title="Remover">✕</button>
+        </div>
+      </div>
+
+      <div class="trow off">
+        <label class="switch"><input type="checkbox"><span class="tk"></span></label>
+        <button class="thumb i-utura" title="Imagem da magia">
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.1 6.5L20 10l-5.9 1.5L12 18l-2.1-6.5L4 10l5.9-1.5z"/></svg>
+        </button>
+        <input class="in" value="Utura" maxlength="40">
+        <input class="key" value="F6" maxlength="12">
+        <input class="in num" type="number" value="60" min="2" max="3600">
+        <input type="color" value="#3b82f6">
+        <span class="st idle">—</span>
+        <div class="acts">
+          <button class="ib" title="Reiniciar">↻</button>
+          <button class="ib del" title="Remover">✕</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">Overlay</div>
+
+    <div class="fgrid">
+      <label class="field">
+        <span>Tamanho</span>
+        <select>
+          <option>Ícone</option>
+          <option>Mini</option>
+          <option>Pequeno</option>
+          <option selected>Médio</option>
+          <option>Grande</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Organização</span>
+        <select>
+          <option selected>Um embaixo do outro</option>
+          <option>Lado a lado</option>
+          <option>Livre</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Posição</span>
+        <select>
+          <option selected>Superior direito</option>
+          <option>Superior esquerdo</option>
+          <option>Inferior direito</option>
+          <option>Inferior esquerdo</option>
+          <option>Personalizada</option>
+        </select>
+      </label>
+
+      <div class="field">
+        <span>Posição livre</span>
+        <button class="btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M9 5l3-3 3 3M9 19l3 3 3-3M5 9l-3 3 3 3M19 9l3 3-3 3"/></svg>
+          Arrastar overlay
+        </button>
+      </div>
+    </div>
+
+    <div class="sgrid">
+      <div class="sl">
+        <div class="sl-label"><span>Tamanho do ícone</span><span class="val">48px</span></div>
+        <input type="range" min="12" max="96" step="4" value="48" style="--fill: 43%">
+      </div>
+
+      <div class="sl">
+        <div class="sl-label"><span>Opacidade</span><span class="val">100%</span></div>
+        <input type="range" min="20" max="100" step="5" value="100" style="--fill: 100%">
+      </div>
+
+      <div class="sl">
+        <div class="sl-label"><span>Volume</span><span class="val">60%</span></div>
+        <div class="vol">
+          <input type="range" min="0" max="100" step="5" value="60" style="--fill: 60%">
+          <button class="btn tiny">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 8.2a5.4 5.4 0 010 7.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Testar
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

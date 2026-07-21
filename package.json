@@ -1,0 +1,27 @@
+{
+  "name": "tibia-alerta-magias",
+  "productName": "Alerta de Magias Tibia",
+  "version": "1.0.0",
+  "description": "Avisos de cooldown de magias do Tibia com overlay na tela, som e sincronizacao pela tecla",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-packager . AlertaMagiasTibia --platform=win32 --arch=x64 --out=dist --overwrite --app-version=1.0.0 --ignore=\"^/(dist|prototipos|\\.github)\""
+  },
+  "keywords": [
+    "tibia",
+    "cooldown",
+    "overlay",
+    "electron",
+    "timer"
+  ],
+  "author": "Otavio Esteves",
+  "license": "MIT",
+  "devDependencies": {
+    "@electron/packager": "^20.0.3",
+    "electron": "^43.1.1"
+  },
+  "dependencies": {
+    "uiohook-napi": "^1.5.5"
+  }
+}

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Alerta de Magias Tibia</title>
+<style>
+  :root {
+    --bg: #14110b;
+    --panel: #211c12;
+    --panel2: #1a160e;
+    --edge: #3a3016;
+    --gold: #e8c65a;
+    --gold-br: #b8912f;
+    --txt: #d8ceb4;
+    --dim: #97906f;
+    --green: #6fd06f;
+    --red: #ff5252;
+    --slot: #0c0a06;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; font-family: 'Trebuchet MS', Verdana, 'Segoe UI', sans-serif;
+    font-size: 12px; color: var(--txt); -webkit-user-select: none;
+  }
+  body {
+    min-height: 100vh; padding: 22px;
+    display: flex; align-items: flex-start; justify-content: center;
+    background:
+      radial-gradient(700px 400px at 50% -60px, #2a2213, #0d0b07 70%);
+  }
+
+  .frame {
+    width: 900px;
+    background: linear-gradient(#241e13, #1a150d);
+    border: 1px solid var(--gold-br);
+    border-radius: 4px;
+    padding: 0;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.75), inset 0 0 0 1px #100c06,
+      inset 0 0 40px rgba(0,0,0,0.5);
+  }
+
+  /* moldura dourada externa dupla */
+  .frame::before { content: none; }
+
+  .titlebar {
+    height: 40px; display: flex; align-items: center; gap: 10px;
+    padding: 0 12px;
+    background: linear-gradient(#2c2513, #201a0e);
+    border-bottom: 1px solid var(--gold-br);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+  }
+  .titlebar::after {
+    content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.5;
+  }
+  .diamond {
+    width: 16px; height: 16px; transform: rotate(45deg); flex: none;
+    background: linear-gradient(135deg, #fff2c0, var(--gold) 40%, var(--gold-br));
+    box-shadow: 0 0 8px rgba(232,198,90,0.5);
+    border: 1px solid #7a5c14;
+  }
+  .titlebar h1 {
+    flex: 1; margin: 0; font-size: 15px; font-weight: bold;
+    letter-spacing: 2px; text-transform: uppercase;
+    background: linear-gradient(#fff2c0, var(--gold) 55%, var(--gold-br));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  }
+  .wbtn {
+    width: 22px; height: 22px; border-radius: 3px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold); font-size: 12px;
+    background: #17130b; border: 1px solid var(--edge);
+  }
+  .wbtn:hover { border-color: var(--gold); color: #fff; }
+
+  .content { display: flex; gap: 12px; padding: 14px; }
+  .esq { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .dir { width: 288px; display: flex; flex-direction: column; gap: 12px; }
+
+  .panel {
+    background: linear-gradient(var(--panel), var(--panel2));
+    border: 1px solid var(--edge);
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px #100c06;
+    overflow: hidden;
+  }
+  .phead {
+    height: 30px; display: flex; align-items: center; gap: 8px; padding: 0 12px;
+    background: linear-gradient(#2a2313, #211a0e);
+    border-bottom: 1px solid var(--edge);
+  }
+  .phead .orn { color: var(--gold-br); font-size: 11px; }
+  .phead h2 {
+    flex: 1; margin: 0; font-size: 12px; font-weight: bold;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold);
+  }
+  .phead .cnt { color: var(--dim); font-size: 11px; letter-spacing: 0.5px; }
+  .pbody { padding: 10px 12px; }
+
+  .cab, .row {
+    display: grid;
+    grid-template-columns: 34px 44px 1fr 46px 54px 28px 66px 46px;
+    gap: 8px; align-items: center;
+  }
+  .cab { padding: 0 6px 8px; color: var(--dim); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.5px; }
+  .row {
+    padding: 7px 6px; border-radius: 4px;
+    background: rgba(255,255,255,0.015);
+    border: 1px solid transparent;
+  }
+  .row + .row { margin-top: 4px; }
+  .row:hover { background: rgba(232,198,90,0.05); border-color: var(--edge); }
+  .row.off { opacity: 0.45; }
+
+  /* switch dourado */
+  .sw { width: 34px; height: 18px; border-radius: 9px; cursor: pointer; position: relative;
+    background: #0c0a06; border: 1px solid var(--edge); transition: 0.15s; }
+  .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px;
+    border-radius: 50%; background: #5a5340; transition: 0.15s; }
+  .sw.on { background: linear-gradient(#3a5f2a, #274a1c); border-color: #4e7a34; }
+  .sw.on::after { left: 18px; background: radial-gradient(circle at 40% 35%, #a8ff9a, var(--green));
+    box-shadow: 0 0 6px rgba(111,208,111,0.7); }
+
+  .slot {
+    width: 40px; height: 40px; position: relative; border-radius: 4px;
+    background: radial-gradient(circle at 50% 38%, #1a150d, var(--slot));
+    border: 1px solid #050403; box-shadow: inset 0 0 0 1px var(--edge), inset 0 2px 6px rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .slot svg { image-rendering: pixelated; filter: drop-shadow(0 1px 0 #000); }
+  .slot .n { position: absolute; right: 3px; bottom: 1px; color: #fff; font-size: 9px;
+    font-weight: bold; text-shadow: 1px 1px 0 #000; }
+
+  .inp {
+    width: 100%; font: inherit; padding: 6px 8px; border-radius: 4px;
+    color: var(--txt); background: #0e0b06;
+    border: 1px solid var(--edge); outline: none;
+  }
+  .inp:focus { border-color: var(--gold-br); box-shadow: 0 0 0 2px rgba(232,198,90,0.15); }
+  .inp.mid { text-align: center; }
+
+  .keycap {
+    height: 30px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 13px; color: var(--gold);
+    background: linear-gradient(#2a2313, #1c160d);
+    border: 1px solid var(--gold-br);
+    box-shadow: inset 0 1px 0 rgba(232,198,90,0.2);
+  }
+
+  .cor { width: 26px; height: 26px; padding: 3px; border-radius: 4px; cursor: pointer;
+    background: #0e0b06; border: 1px solid var(--edge); }
+  .cor i { display: block; width: 100%; height: 100%; border-radius: 2px; }
+
+  .status { text-align: center; font-weight: bold; font-size: 14px; color: var(--gold);
+    font-variant-numeric: tabular-nums; }
+  .status.agora { color: var(--red); text-shadow: 0 0 8px rgba(255,82,82,0.6);
+    animation: pulse 0.5s ease-in-out infinite alternate; }
+  @keyframes pulse { to { opacity: 0.35; transform: scale(0.94); } }
+
+  .acts { display: flex; gap: 5px; justify-content: flex-end; }
+  .ib { width: 22px; height: 22px; border-radius: 4px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 12px;
+    color: var(--dim); background: #14100a; border: 1px solid var(--edge); }
+  .ib:hover { color: var(--gold); border-color: var(--gold-br); }
+  .ib.del:hover { color: var(--red); border-color: #7a3232; }
+
+  .foot { display: flex; gap: 8px; padding-top: 12px; }
+  .btn { font: inherit; font-weight: bold; cursor: pointer; padding: 8px 16px; border-radius: 4px;
+    letter-spacing: 0.5px; color: var(--gold);
+    background: linear-gradient(#2a2313, #1c160d); border: 1px solid var(--gold-br); }
+  .btn:hover { color: #fff2c0; border-color: var(--gold); box-shadow: 0 0 10px rgba(232,198,90,0.2); }
+  .btn.primary { color: #1a150a;
+    background: linear-gradient(#f2d874, var(--gold-br));
+    border-color: #fff2c0; }
+  .btn.primary:hover { background: linear-gradient(#ffe488, #c99a34); }
+  .btn.full { width: 100%; justify-content: center; display: flex; }
+
+  .opt { display: flex; align-items: center; gap: 10px; padding: 6px 2px; }
+  .opt > label { width: 92px; color: var(--dim); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.5px; }
+  .opt .val { width: 44px; text-align: right; color: var(--gold); font-weight: bold; }
+  select.inp { cursor: pointer; }
+  select.inp option { background: #17130b; }
+
+  .slider { flex: 1; height: 6px; border-radius: 3px; position: relative; cursor: pointer;
+    background: #0c0a06; border: 1px solid var(--edge); }
+  .slider .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px;
+    background: linear-gradient(90deg, var(--gold-br), var(--gold)); }
+  .slider .th { position: absolute; top: 50%; transform: translate(-50%,-50%);
+    width: 14px; height: 14px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #fff2c0, var(--gold) 60%, var(--gold-br));
+    border: 1px solid #7a5c14; box-shadow: 0 0 6px rgba(232,198,90,0.5); }
+
+  .game { height: 130px; border-radius: 4px; position: relative; overflow: hidden;
+    border: 1px solid #050403; box-shadow: inset 0 0 0 1px var(--edge);
+    background:
+      repeating-linear-gradient(90deg, #3d5a2c 0 32px, #43602f 32px 64px),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0 32px, transparent 32px 64px); }
+  .gc { position: absolute; display: flex; align-items: center; gap: 6px; padding: 3px 7px 3px 3px;
+    border-radius: 4px; background: rgba(14,11,6,0.85); border: 1px solid var(--edge); }
+  .gc .gs { width: 26px; height: 26px; border-radius: 3px; background: var(--slot);
+    border: 1px solid #000; display: flex; align-items: center; justify-content: center; }
+  .gc .gk { color: var(--gold); font-size: 10px; font-weight: bold; text-shadow: 1px 1px 0 #000; }
+  .gc .gt { color: #fff; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 0 #000; }
+  .gc.a { left: 16px; top: 18px; }
+  .gc.b { left: 16px; top: 64px; border: 2px solid var(--red);
+    box-shadow: 0 0 12px rgba(255,82,82,0.5); animation: pulse 0.5s ease-in-out infinite alternate; }
+  .gc.b .gt { color: var(--red); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="titlebar">
+    <span class="diamond"></span>
+    <h1>Alerta de Magias Tibia</h1>
+    <div class="wbtn">–</div>
+    <div class="wbtn">✕</div>
+  </div>
+
+  <div class="content">
+    <div class="esq">
+      <div class="panel">
+        <div class="phead"><span class="orn">◆</span><h2>Magias</h2><span class="cnt">2 ativas</span></div>
+        <div class="pbody">
+          <div class="cab"><span></span><span>Item</span><span>Nome</span><span>Tecla</span><span>Tempo</span><span>Cor</span><span>Status</span><span></span></div>
+
+          <div class="row">
+            <div class="sw on"></div>
+            <div class="slot">
+              <svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                <rect x="4" y="0" width="2" height="1" fill="#ffe14a"/><rect x="3" y="1" width="1" height="2" fill="#ff9a2c"/><rect x="5" y="1" width="2" height="2" fill="#ffd23c"/>
+                <rect x="2" y="3" width="2" height="2" fill="#f2661d"/><rect x="4" y="3" width="3" height="2" fill="#ff9a2c"/><rect x="1" y="5" width="3" height="2" fill="#d63c12"/><rect x="4" y="5" width="3" height="2" fill="#f2661d"/><rect x="2" y="7" width="5" height="2" fill="#a52408"/><rect x="4" y="7" width="2" height="1" fill="#ffd23c"/>
+              </svg><span class="n">40</span>
+            </div>
+            <input class="inp" value="Flam">
+            <div class="keycap">4</div>
+            <input class="inp mid" value="40">
+            <div class="cor"><i style="background:#8b5cf6"></i></div>
+            <div class="status">23s</div>
+            <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+          </div>
+
+          <div class="row">
+            <div class="sw on"></div>
+            <div class="slot">
+              <svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                <rect x="2" y="1" width="6" height="7" fill="#2c6b1f"/><rect x="3" y="2" width="4" height="5" fill="#43a02c"/><rect x="4" y="3" width="2" height="3" fill="#8fe05a"/>
+              </svg><span class="n">180</span>
+            </div>
+            <input class="inp" value="Croco">
+            <div class="keycap">F3</div>
+            <input class="inp mid" value="180">
+            <div class="cor"><i style="background:#22c55e"></i></div>
+            <div class="status agora">AGORA!</div>
+            <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+          </div>
+
+          <div class="row off">
+            <div class="sw"></div>
+            <div class="slot">
+              <svg width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges">
+                <rect x="3" y="1" width="4" height="7" fill="#2f66a0"/><rect x="4" y="2" width="2" height="4" fill="#6fa8dc"/><rect x="4" y="1" width="2" height="1" fill="#bfe0ff"/>
+              </svg><span class="n">120</span>
+            </div>
+            <input class="inp" value="Utura">
+            <div class="keycap">F7</div>
+            <input class="inp mid" value="120">
+            <div class="cor"><i style="background:#06b6d4"></i></div>
+            <div class="status">—</div>
+            <div class="acts"><div class="ib">↻</div><div class="ib del">✕</div></div>
+          </div>
+
+          <div class="foot">
+            <button class="btn primary">+ Adicionar magia</button>
+            <button class="btn">↻ Reiniciar todos</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="phead"><span class="orn">◆</span><h2>Prévia no jogo</h2></div>
+        <div class="pbody" style="padding:8px">
+          <div class="game">
+            <div class="gc a"><span class="gs"><svg width="20" height="20" viewBox="0 0 10 10" shape-rendering="crispEdges"><rect x="4" y="0" width="2" height="1" fill="#ffe14a"/><rect x="3" y="1" width="1" height="2" fill="#ff9a2c"/><rect x="5" y="1" width="2" height="2" fill="#ffd23c"/><rect x="2" y="3" width="2" height="2" fill="#f2661d"/><rect x="4" y="3" width="3" height="2" fill="#ff9a2c"/><rect x="1" y="5" width="3" height="2" fill="#d63c12"/><rect x="4" y="5" width="3" height="2" fill="#f2661d"/><rect x="2" y="7" width="5" height="2" fill="#a52408"/></svg></span><span class="gk">4</span><span class="gt">23s</span></div>
+            <div class="gc b"><span class="gs"><svg width="20" height="20" viewBox="0 0 10 10" shape-rendering="crispEdges"><rect x="2" y="1" width="6" height="7" fill="#2c6b1f"/><rect x="3" y="2" width="4" height="5" fill="#43a02c"/><rect x="4" y="3" width="2" height="3" fill="#8fe05a"/></svg></span><span class="gk">F3</span><span class="gt">AGORA!</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dir">
+      <div class="panel">
+        <div class="phead"><span class="orn">◆</span><h2>Overlay</h2></div>
+        <div class="pbody">
+          <div class="opt"><label>Tamanho</label><select class="inp"><option>Ícone</option><option>Mini</option><option>Pequeno</option><option>Médio</option><option selected>Grande</option></select></div>
+          <div class="opt"><label>Organização</label><select class="inp"><option selected>Um embaixo</option><option>Lado a lado</option><option>Livre</option></select></div>
+          <div class="opt"><label>Posição</label><select class="inp"><option>Sup. direito</option><option>Sup. esquerdo</option><option>Inf. direito</option><option>Inf. esquerdo</option><option selected>Personalizada</option></select></div>
+          <div class="opt"><label>Tam. ícone</label><div class="slider"><span class="fill" style="width:18%"></span><span class="th" style="left:18%"></span></div><span class="val">24px</span></div>
+          <div class="opt"><label>Opacidade</label><div class="slider"><span class="fill" style="width:62%"></span><span class="th" style="left:62%"></span></div><span class="val">70%</span></div>
+          <div class="opt" style="padding-top:8px"><button class="btn full">Arrastar overlay</button></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="phead"><span class="orn">◆</span><h2>Som</h2></div>
+        <div class="pbody">
+          <div class="opt"><label>Volume</label><div class="slider"><span class="fill" style="width:45%"></span><span class="th" style="left:45%"></span></div><span class="val">45%</span></div>
+          <div class="opt" style="padding-top:6px"><button class="btn full">Testar som</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

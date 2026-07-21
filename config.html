@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' file: data:">
+<link rel="stylesheet" href="config.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="title">
+    <div class="mark">
+      <svg viewBox="0 0 24 24"><path d="M13 2 4.6 13.4c-.3.4 0 1 .5 1H10l-1.8 7.1c-.1.6.6.9 1 .5L19.4 10c.3-.4 0-1-.5-1H14l1.9-6.4c.2-.6-.5-1-1-.6z"/></svg>
+    </div>
+    <h1>Alerta de Magias Tibia</h1>
+    <span id="saved" class="saved">Salvo</span>
+  </div>
+  <div class="tb-actions">
+    <button id="btn-restart-all" class="btn" title="Recomeça todos os timers do zero">↻ Reiniciar todos</button>
+    <button id="btn-add" class="btn primary">+ Adicionar magia</button>
+  </div>
+</header>
+
+<main>
+
+  <section>
+    <div class="sec-label">Magias <span id="count" class="count">0</span></div>
+
+    <div class="table">
+      <div class="thead">
+        <span>Ativa</span><span>Img</span><span class="left">Magia</span><span>Tecla</span>
+        <span>Tempo</span><span>Cor</span><span>Status</span><span></span>
+      </div>
+      <div id="rows"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">Overlay</div>
+
+    <div class="fgrid">
+      <label class="field">
+        <span>Tamanho</span>
+        <select id="size">
+          <option value="icon">Ícone</option>
+          <option value="mini">Mini</option>
+          <option value="small">Pequeno</option>
+          <option value="medium">Médio</option>
+          <option value="large">Grande</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Organização</span>
+        <select id="layout">
+          <option value="vertical">Um embaixo do outro</option>
+          <option value="horizontal">Lado a lado</option>
+          <option value="free">Livre</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Posição</span>
+        <select id="corner">
+          <option value="top-right">Superior direito</option>
+          <option value="top-left">Superior esquerdo</option>
+          <option value="bottom-right">Inferior direito</option>
+          <option value="bottom-left">Inferior esquerdo</option>
+          <option value="custom">Personalizada</option>
+        </select>
+      </label>
+
+      <div class="field">
+        <span>Posição livre</span>
+        <button id="btn-position" class="btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M9 5l3-3 3 3M9 19l3 3 3-3M5 9l-3 3 3 3M19 9l3 3-3 3"/></svg>
+          <span id="pos-label">Arrastar overlay</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="sgrid">
+      <div class="sl" id="sl-icon">
+        <div class="sl-label">
+          <span>Tamanho do ícone</span>
+          <span id="icon-size-val" class="val">48px</span>
+        </div>
+        <input type="range" id="icon-size" min="12" max="96" step="4" value="48">
+      </div>
+
+      <div class="sl">
+        <div class="sl-label">
+          <span>Opacidade</span>
+          <span id="opacity-val" class="val">100%</span>
+        </div>
+        <input type="range" id="opacity" min="20" max="100" step="5" value="100">
+      </div>
+
+      <div class="sl">
+        <div class="sl-label">
+          <span>Volume</span>
+          <button id="btn-test" class="btn tiny">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 8.2a5.4 5.4 0 010 7.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Testar
+          </button>
+          <span id="volume-val" class="val">60%</span>
+        </div>
+        <input type="range" id="volume" min="0" max="100" step="5" value="60">
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<template id="row-template">
+  <div class="trow">
+    <label class="switch">
+      <input type="checkbox" class="in-enabled">
+      <span class="tk"></span>
+    </label>
+    <button class="thumb img-btn" title="Imagem da magia (arquivo, GIF ou Ctrl+V)">
+      <img class="img-thumb" hidden alt="">
+      <span class="img-ph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg>
+      </span>
+    </button>
+    <input class="in in-name" maxlength="40" placeholder="Nome da magia">
+    <input class="key in-key" maxlength="12" placeholder="F1">
+    <input class="in num in-cd" type="number" min="2" max="3600" step="1">
+    <input type="color" class="in-color">
+    <span class="st idle status">—</span>
+    <div class="acts">
+      <button class="ib btn-restart" title="Reiniciar o timer desta magia agora">↻</button>
+      <button class="ib del btn-del" title="Remover">✕</button>
+    </div>
+  </div>
+</template>
+
+<div id="img-menu" hidden></div>
+
+<script src="config.js"></script>
+</body>
+</html>

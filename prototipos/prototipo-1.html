@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Alerta de Magias Tibia</title>
+<style>
+/* ============ PROTÓTIPO 1 — DARK NEON GAMER ============ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #07070c;
+  --card: rgba(255, 255, 255, 0.035);
+  --border: rgba(255, 255, 255, 0.09);
+  --txt: #eef0ff;
+  --mut: #9aa0bb;
+  --vio: #8b5cf6;
+  --cyn: #22d3ee;
+  --red: #ff4d5e;
+  --grad: linear-gradient(135deg, #8b5cf6, #22d3ee);
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  -webkit-user-select: none;
+  overflow-x: hidden;
+}
+
+.blobs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(640px 420px at 10% -8%, rgba(139, 92, 246, 0.20), transparent 62%),
+    radial-gradient(720px 520px at 106% 112%, rgba(34, 211, 238, 0.14), transparent 62%);
+}
+
+.app {
+  position: relative;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 20px 22px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------- header ---------- */
+
+header { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+
+.brand { display: flex; align-items: center; gap: 12px; }
+
+.logo {
+  width: 36px; height: 36px;
+  border-radius: 11px;
+  background: var(--grad);
+  display: grid; place-items: center;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.45);
+}
+.logo svg { width: 19px; height: 19px; fill: #fff; }
+
+h1 { font-size: 17px; font-weight: 650; letter-spacing: 0.2px; }
+
+.pill {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--mut);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px 13px;
+  border-radius: 999px;
+}
+.pill .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 9px rgba(52, 211, 153, 0.9);
+  animation: pulse 2.2s ease-in-out infinite;
+}
+@keyframes pulse { 50% { opacity: 0.45; } }
+
+/* ---------- layout ---------- */
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 296px;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  padding: 15px 18px 11px;
+}
+.card-head h2 { font-size: 14px; font-weight: 650; display: flex; align-items: center; gap: 9px; }
+
+.badge {
+  font-size: 11px; font-weight: 600;
+  color: #c8cdf0;
+  background: rgba(139, 92, 246, 0.18);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.actions { display: flex; gap: 8px; }
+
+/* ---------- botões ---------- */
+
+.btn {
+  height: 33px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--txt);
+  font-family: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  transition: background 0.13s, border-color 0.13s, box-shadow 0.13s, transform 0.13s;
+}
+.btn:hover { background: rgba(255, 255, 255, 0.09); }
+.btn:active { transform: translateY(1px); }
+.btn svg { width: 14px; height: 14px; }
+
+.btn.primary {
+  background: var(--grad);
+  border: none;
+  font-weight: 650;
+  box-shadow: 0 4px 18px rgba(124, 92, 255, 0.42);
+}
+.btn.primary:hover { box-shadow: 0 6px 24px rgba(124, 92, 255, 0.6); filter: brightness(1.07); }
+
+.btn.block { width: 100%; }
+
+.btn.mini { height: 29px; padding: 0 11px; font-size: 12px; }
+
+/* ---------- tabela de magias ---------- */
+
+.thead, .trow {
+  display: grid;
+  grid-template-columns: 42px 40px 1fr 58px 68px 38px 84px 64px;
+  gap: 10px;
+  align-items: center;
+  padding: 0 18px;
+}
+
+.thead {
+  font-size: 10.5px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--mut);
+  padding-top: 4px;
+  padding-bottom: 8px;
+}
+
+.trow {
+  padding-top: 9px;
+  padding-bottom: 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.12s;
+}
+.trow:hover { background: rgba(255, 255, 255, 0.025); }
+.trow:last-child { border-radius: 0 0 16px 16px; }
+
+.trow.off .thumb,
+.trow.off .in,
+.trow.off input[type="color"],
+.trow.off .st { opacity: 0.42; }
+
+/* miniatura */
+
+.thumb {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  display: grid; place-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.13s, box-shadow 0.13s;
+}
+.thumb svg { width: 18px; height: 18px; }
+.thumb:hover { border-color: var(--vio); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18); }
+
+.t-flam  { background: radial-gradient(circle at 30% 22%, rgba(139, 92, 246, 0.55), rgba(139, 92, 246, 0.10)); }
+.t-flam svg  { fill: #cabaff; }
+.t-croco { background: radial-gradient(circle at 30% 22%, rgba(34, 197, 94, 0.45), rgba(34, 197, 94, 0.08)); }
+.t-croco svg { stroke: #93e8ac; fill: none; stroke-width: 2.1; stroke-linecap: round; }
+.t-utura { background: radial-gradient(circle at 30% 22%, rgba(59, 130, 246, 0.45), rgba(59, 130, 246, 0.08)); }
+.t-utura svg { fill: #a5c8fa; }
+
+/* inputs */
+
+.in {
+  width: 100%;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--txt);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 0 10px;
+  outline: none;
+  transition: border-color 0.13s, box-shadow 0.13s;
+}
+.in:focus { border-color: var(--vio); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18); }
+.in.key { text-align: center; text-transform: uppercase; font-weight: 650; }
+.in.cd { text-align: center; }
+.in.cd::-webkit-inner-spin-button { display: none; }
+
+input[type="color"] {
+  width: 32px; height: 32px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0;
+  cursor: pointer;
+  transition: box-shadow 0.13s;
+}
+input[type="color"]:hover { box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18); }
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 4px; }
+input[type="color"]::-webkit-color-swatch { border: none; border-radius: 5px; }
+
+/* status */
+
+.st {
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: #cdd2f2;
+}
+.st.go {
+  color: var(--red);
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  background: rgba(255, 77, 94, 0.12);
+  border: 1px solid rgba(255, 77, 94, 0.35);
+  border-radius: 8px;
+  padding: 4px 0;
+  text-shadow: 0 0 14px rgba(255, 77, 94, 0.75);
+  animation: blink 0.75s ease-in-out infinite;
+}
+@keyframes blink { 50% { opacity: 0.3; } }
+.st.idle { color: var(--mut); font-weight: 400; }
+
+/* ações da linha */
+
+.acts { display: flex; gap: 6px; justify-content: flex-end; }
+
+.ib {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--mut);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.13s, color 0.13s, border-color 0.13s;
+}
+.ib:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
+.ib.del:hover { border-color: var(--red); color: var(--red); background: rgba(255, 77, 94, 0.08); }
+
+/* ---------- switch ---------- */
+
+.switch { position: relative; display: inline-block; width: 38px; height: 21px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .tk {
+  position: absolute; inset: 0;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 21px;
+  transition: background 0.16s, box-shadow 0.16s;
+}
+.switch .tk::before {
+  content: '';
+  position: absolute;
+  width: 15px; height: 15px;
+  left: 3px; top: 3px;
+  background: #b9bed9;
+  border-radius: 50%;
+  transition: transform 0.16s, background 0.16s;
+}
+.switch input:checked + .tk {
+  background: var(--grad);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.55);
+}
+.switch input:checked + .tk::before { transform: translateX(17px); background: #fff; }
+
+/* ---------- painel lateral ---------- */
+
+.side { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 14px; }
+.side h2 { font-size: 14px; font-weight: 650; }
+
+.subhead {
+  font-size: 10.5px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--mut);
+  margin-top: 2px;
+}
+
+.f { display: flex; flex-direction: column; gap: 7px; }
+.f > span { font-size: 12px; color: var(--mut); }
+
+select {
+  height: 34px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--txt);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 0 30px 0 11px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="%239aa0bb" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  transition: border-color 0.13s, box-shadow 0.13s;
+}
+select:hover { border-color: rgba(255, 255, 255, 0.2); }
+select:focus { border-color: var(--vio); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18); }
+
+.divider { height: 1px; background: var(--border); }
+
+/* sliders */
+
+.sl { display: flex; flex-direction: column; gap: 9px; }
+.sl-label { display: flex; align-items: baseline; justify-content: space-between; }
+.sl-label span:first-child { font-size: 12px; color: var(--mut); }
+.sl-label .val {
+  font-size: 12px; font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #8b5cf6 0%, #22d3ee var(--fill), rgba(255, 255, 255, 0.09) var(--fill));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.28), 0 2px 6px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.13s;
+}
+input[type="range"]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.35), 0 2px 6px rgba(0, 0, 0, 0.5); }
+
+.vol { display: flex; align-items: center; gap: 10px; }
+.vol input[type="range"] { flex: 1; }
+</style>
+</head>
+<body>
+
+<div class="blobs"></div>
+
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24"><path d="M13 2 4.6 13.4c-.3.4 0 1 .5 1H10l-1.8 7.1c-.1.6.6.9 1 .5L19.4 10c.3-.4 0-1-.5-1H14l1.9-6.4c.2-.6-.5-1-1-.6z"/></svg>
+      </div>
+      <h1>Alerta de Magias Tibia</h1>
+    </div>
+    <div class="pill"><span class="dot"></span>Overlay ativo</div>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Magias <span class="badge">3</span></h2>
+        <div class="actions">
+          <button class="btn">↻ Reiniciar todos</button>
+          <button class="btn primary">+ Adicionar magia</button>
+        </div>
+      </div>
+
+      <div class="thead">
+        <span>Ativa</span><span>Img</span><span>Magia</span><span>Tecla</span>
+        <span>Tempo</span><span>Cor</span><span>Status</span><span></span>
+      </div>
+
+      <div class="trow">
+        <label class="switch"><input type="checkbox" checked><span class="tk"></span></label>
+        <button class="thumb t-flam" title="Imagem da magia">
+          <svg viewBox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67z"/></svg>
+        </button>
+        <input class="in" value="Flam" maxlength="40">
+        <input class="in key" value="4" maxlength="12">
+        <input class="in cd" type="number" value="40" min="2" max="3600">
+        <input type="color" value="#8b5cf6">
+        <span class="st">23s</span>
+        <div class="acts">
+          <button class="ib" title="Reiniciar">↻</button>
+          <button class="ib del" title="Remover">✕</button>
+        </div>
+      </div>
+
+      <div class="trow">
+        <label class="switch"><input type="checkbox" checked><span class="tk"></span></label>
+        <button class="thumb t-croco" title="Imagem da magia">
+          <svg viewBox="0 0 24 24"><path d="M6 4c3 4 3 12 0 16M12 3c3 4.5 3 13.5 0 18M18 4c3 4 3 12 0 16"/></svg>
+        </button>
+        <input class="in" value="Croco" maxlength="40">
+        <input class="in key" value="F3" maxlength="12">
+        <input class="in cd" type="number" value="180" min="2" max="3600">
+        <input type="color" value="#22c55e">
+        <span class="st go">AGORA!</span>
+        <div class="acts">
+          <button class="ib" title="Reiniciar">↻</button>
+          <button class="ib del" title="Remover">✕</button>
+        </div>
+      </div>
+
+      <div class="trow off">
+        <label class="switch"><input type="checkbox"><span class="tk"></span></label>
+        <button class="thumb t-utura" title="Imagem da magia">
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.1 6.5L20 10l-5.9 1.5L12 18l-2.1-6.5L4 10l5.9-1.5z"/></svg>
+        </button>
+        <input class="in" value="Utura" maxlength="40">
+        <input class="in key" value="F6" maxlength="12">
+        <input class="in cd" type="number" value="60" min="2" max="3600">
+        <input type="color" value="#3b82f6">
+        <span class="st idle">—</span>
+        <div class="acts">
+          <button class="ib" title="Reiniciar">↻</button>
+          <button class="ib del" title="Remover">✕</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card side">
+      <h2>Overlay</h2>
+
+      <label class="f">
+        <span>Tamanho</span>
+        <select>
+          <option>Ícone</option>
+          <option>Mini</option>
+          <option>Pequeno</option>
+          <option selected>Médio</option>
+          <option>Grande</option>
+        </select>
+      </label>
+
+      <label class="f">
+        <span>Organização</span>
+        <select>
+          <option selected>Um embaixo do outro</option>
+          <option>Lado a lado</option>
+          <option>Livre</option>
+        </select>
+      </label>
+
+      <label class="f">
+        <span>Posição</span>
+        <select>
+          <option selected>Superior direito</option>
+          <option>Superior esquerdo</option>
+          <option>Inferior direito</option>
+          <option>Inferior esquerdo</option>
+          <option>Personalizada</option>
+        </select>
+      </label>
+
+      <button class="btn block">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M9 5l3-3 3 3M9 19l3 3 3-3M5 9l-3 3 3 3M19 9l3 3-3 3"/></svg>
+        Arrastar overlay
+      </button>
+
+      <div class="divider"></div>
+
+      <div class="sl">
+        <div class="sl-label"><span>Tamanho do ícone</span><span class="val">48px</span></div>
+        <input type="range" min="12" max="96" step="4" value="48" style="--fill: 43%">
+      </div>
+
+      <div class="sl">
+        <div class="sl-label"><span>Opacidade</span><span class="val">100%</span></div>
+        <input type="range" min="20" max="100" step="5" value="100" style="--fill: 100%">
+      </div>
+
+      <div class="divider"></div>
+
+      <span class="subhead">Som</span>
+
+      <div class="sl">
+        <div class="sl-label"><span>Volume</span><span class="val">60%</span></div>
+        <div class="vol">
+          <input type="range" min="0" max="100" step="5" value="60" style="--fill: 60%">
+          <button class="btn mini">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 8.2a5.4 5.4 0 010 7.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Testar
+          </button>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+</div>
+
+</body>
+</html>
