@@ -68,7 +68,8 @@ body {
   border: 1px solid var(--line2);
   display: grid; place-items: center;
 }
-.mark svg { width: 13px; height: 13px; fill: var(--acc); }
+.mark svg { width: 14px; height: 14px; color: var(--acc); fill: var(--acc); }
+.mark svg[fill="none"] { fill: none; }
 
 /* aviso de salvo automatico */
 .saved {

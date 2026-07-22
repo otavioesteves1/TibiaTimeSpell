@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>TibiaTimeSpell — ícone do app</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0c0c0c; color: #ececec;
+    font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px;
+    padding: 24px; -webkit-user-select: none;
+  }
+  h1 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .sub { color: #6e6e6e; font-size: 11.5px; margin-bottom: 22px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .card { border: 1px solid #1f1f1f; border-radius: 10px; background: #111; padding: 16px; }
+  .card:hover { border-color: #9d7bff; }
+  .hd { display: flex; align-items: baseline; gap: 8px; margin-bottom: 14px; }
+  .letra {
+    font-size: 15px; font-weight: 700; color: #9d7bff;
+    width: 22px; height: 22px; border-radius: 5px; background: rgba(157,123,255,.14);
+    display: grid; place-items: center;
+  }
+  .nome { font-size: 12px; color: #9c9c9c; }
+
+  .big { display: block; width: 96px; height: 96px; margin: 0 auto 14px; image-rendering: auto; }
+
+  /* simula a barra de tarefas do Windows */
+  .taskbar {
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(#2a2733, #211f2a);
+    border: 1px solid #33303f; border-radius: 8px;
+    padding: 8px 12px;
+  }
+  .taskbar img { display: block; }
+  .sz { text-align: center; color: #5c5c66; font-size: 9px; margin-top: 3px; }
+  .cell { text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>TibiaTimeSpell — ícone do app (barra de tarefas)</h1>
+<p class="sub">Cada opção ampliada e depois nos tamanhos reais que o Windows usa. Me diga a letra.</p>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="hd"><span class="letra">A</span><span class="nome">Seta de cooldown</span></div>
+    <img class="big" src="icones/a-cooldown.png" alt="">
+    <div class="taskbar">
+      <div class="cell"><img src="icones/a-cooldown.png" width="48" height="48"><div class="sz">48</div></div>
+      <div class="cell"><img src="icones/a-cooldown.png" width="32" height="32"><div class="sz">32</div></div>
+      <div class="cell"><img src="icones/a-cooldown.png" width="24" height="24"><div class="sz">24</div></div>
+      <div class="cell"><img src="icones/a-cooldown.png" width="16" height="16"><div class="sz">16</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><span class="letra">B</span><span class="nome">Ampulheta</span></div>
+    <img class="big" src="icones/b-ampulheta.png" alt="">
+    <div class="taskbar">
+      <div class="cell"><img src="icones/b-ampulheta.png" width="48" height="48"><div class="sz">48</div></div>
+      <div class="cell"><img src="icones/b-ampulheta.png" width="32" height="32"><div class="sz">32</div></div>
+      <div class="cell"><img src="icones/b-ampulheta.png" width="24" height="24"><div class="sz">24</div></div>
+      <div class="cell"><img src="icones/b-ampulheta.png" width="16" height="16"><div class="sz">16</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><span class="letra">C</span><span class="nome">Chama roxa</span></div>
+    <img class="big" src="icones/c-chama.png" alt="">
+    <div class="taskbar">
+      <div class="cell"><img src="icones/c-chama.png" width="48" height="48"><div class="sz">48</div></div>
+      <div class="cell"><img src="icones/c-chama.png" width="32" height="32"><div class="sz">32</div></div>
+      <div class="cell"><img src="icones/c-chama.png" width="24" height="24"><div class="sz">24</div></div>
+      <div class="cell"><img src="icones/c-chama.png" width="16" height="16"><div class="sz">16</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><span class="letra">D</span><span class="nome">Relógio</span></div>
+    <img class="big" src="icones/d-relogio.png" alt="">
+    <div class="taskbar">
+      <div class="cell"><img src="icones/d-relogio.png" width="48" height="48"><div class="sz">48</div></div>
+      <div class="cell"><img src="icones/d-relogio.png" width="32" height="32"><div class="sz">32</div></div>
+      <div class="cell"><img src="icones/d-relogio.png" width="24" height="24"><div class="sz">24</div></div>
+      <div class="cell"><img src="icones/d-relogio.png" width="16" height="16"><div class="sz">16</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><span class="letra">E</span><span class="nome">Anel de cooldown</span></div>
+    <img class="big" src="icones/e-anel.png" alt="">
+    <div class="taskbar">
+      <div class="cell"><img src="icones/e-anel.png" width="48" height="48"><div class="sz">48</div></div>
+      <div class="cell"><img src="icones/e-anel.png" width="32" height="32"><div class="sz">32</div></div>
+      <div class="cell"><img src="icones/e-anel.png" width="24" height="24"><div class="sz">24</div></div>
+      <div class="cell"><img src="icones/e-anel.png" width="16" height="16"><div class="sz">16</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><span class="letra">F</span><span class="nome">Raio</span></div>
+    <img class="big" src="icones/f-raio.png" alt="">
+    <div class="taskbar">
+      <div class="cell"><img src="icones/f-raio.png" width="48" height="48"><div class="sz">48</div></div>
+      <div class="cell"><img src="icones/f-raio.png" width="32" height="32"><div class="sz">32</div></div>
+      <div class="cell"><img src="icones/f-raio.png" width="24" height="24"><div class="sz">24</div></div>
+      <div class="cell"><img src="icones/f-raio.png" width="16" height="16"><div class="sz">16</div></div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

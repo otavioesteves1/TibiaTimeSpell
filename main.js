@@ -438,6 +438,7 @@ function createConfigWindow() {
     autoHideMenuBar: true,
     frame: false,    // barra de titulo propria (sem a faixa azul do Windows)
     title: 'TibiaTimeSpell',
+    icon: path.join(__dirname, 'assets', 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       backgroundThrottling: false, // o som dos avisos toca aqui, mesmo minimizada

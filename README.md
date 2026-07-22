@@ -1,3 +1,5 @@
+<img src="assets/icon.png" width="96" align="right" alt="">
+
 # TibiaTimeSpell
 
 App em Electron que avisa quando está na hora de usar cada magia de novo no Tibia.
