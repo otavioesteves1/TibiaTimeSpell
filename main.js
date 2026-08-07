@@ -430,10 +430,11 @@ function syncOverlays() {
 
 function createConfigWindow() {
   configWin = new BrowserWindow({
-    width: 940,
-    height: 680,
-    minWidth: 360,   // modo magrinho: a interface se adapta ate ficar bem estreita
-    minHeight: 420,
+    width: 380,      // coluna estreita, fica discreta ao lado do jogo
+    height: 640,
+    minWidth: 300,
+    minHeight: 380,
+    maxWidth: 560,
     backgroundColor: '#0c0c0c',
     autoHideMenuBar: true,
     frame: false,    // barra de titulo propria (sem a faixa azul do Windows)

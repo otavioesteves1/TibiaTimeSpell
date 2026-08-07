@@ -2,9 +2,10 @@ const CORES = ['#8b5cf6', '#22c55e', '#f59e0b', '#ec4899', '#06b6d4', '#ef4444']
 
 let state = null;
 let saveTimeout = null;
-let selectedId = null;
+let expandedId = null; // item aberto (acordeao: um por vez); tambem recebe o Ctrl+V
 
 const rowsEl = document.getElementById('rows');
+const emptyEl = document.getElementById('empty');
 const countEl = document.getElementById('count');
 const savedEl = document.getElementById('saved');
 const cornerEl = document.getElementById('corner');
@@ -19,7 +20,7 @@ const iconSizeValEl = document.getElementById('icon-size-val');
 const slIconEl = document.getElementById('sl-icon');
 const imgMenu = document.getElementById('img-menu');
 
-// ---- salvamento automatico: toda mudanca vai pro disco na hora ----
+// ---- salvamento automatico ----
 
 let savedTimer = null;
 function piscarSalvo() {
@@ -35,13 +36,11 @@ function save() {
   piscarSalvo();
 }
 
-// pra campos de texto: espera parar de digitar antes de salvar
 function saveDebounced() {
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(save, 350);
 }
 
-// garante que nada digitado se perca se a janela fechar antes do debounce
 window.addEventListener('beforeunload', () => {
   if (saveTimeout) {
     clearTimeout(saveTimeout);
@@ -65,30 +64,29 @@ function preencherSlider(el) {
   el.style.setProperty('--fill', pct + '%');
 }
 
-function selectRow(id) {
-  selectedId = id;
-  for (const r of rowsEl.children) {
-    r.classList.toggle('selected', Number(r.dataset.id) === id);
-  }
+function rowDe(id) {
+  return [...rowsEl.children].find((r) => Number(r.dataset.id) === id);
 }
 
-function updateThumb(sp) {
-  const row = [...rowsEl.children].find((r) => Number(r.dataset.id) === sp.id);
+function atualizarImagens(sp) {
+  const row = rowDe(sp.id);
   if (!row) return;
-  const thumb = row.querySelector('.img-thumb');
-  const ph = row.querySelector('.img-ph');
-  if (sp.image) {
-    thumb.src = fileUrl(sp.image);
-    thumb.hidden = false;
-    ph.style.display = 'none';
-  } else {
-    thumb.hidden = true;
-    thumb.removeAttribute('src');
-    ph.style.display = '';
+  for (const [imgSel, phSel] of [['.thumb-img', '.thumb-ph'], ['.img-thumb', '.img-ph']]) {
+    const img = row.querySelector(imgSel);
+    const ph = row.querySelector(phSel);
+    if (sp.image) {
+      img.src = fileUrl(sp.image);
+      img.hidden = false;
+      ph.style.display = 'none';
+    } else {
+      img.hidden = true;
+      img.removeAttribute('src');
+      ph.style.display = '';
+    }
   }
 }
 
-// ---- imagem: menu do botao ----
+// ---- imagem ----
 
 async function aplicarImagem(sp, action, btn) {
   const res = action === 'pick' ? await api.pickImage(sp.id)
@@ -96,53 +94,49 @@ async function aplicarImagem(sp, action, btn) {
     : await api.clearImage(sp.id);
   if (res && res.ok) {
     sp.image = res.image;
-    updateThumb(sp);
+    atualizarImagens(sp);
     piscarSalvo();
   } else if (res && !res.canceled && btn) {
-    // colar sem imagem na area de transferencia: pisca vermelho
     btn.classList.add('err');
     setTimeout(() => btn.classList.remove('err'), 700);
   }
 }
 
-function abrirImgMenu(sp, btn) {
-  imgMenu.innerHTML = '';
-  const mk = (txt, fn) => {
-    const b = document.createElement('button');
-    b.textContent = txt;
-    b.onclick = (e) => {
-      e.stopPropagation();
-      imgMenu.hidden = true;
-      fn();
-    };
-    imgMenu.appendChild(b);
-  };
-  mk('Escolher arquivo…', () => aplicarImagem(sp, 'pick', btn));
-  mk('Colar imagem (Ctrl+V)', () => aplicarImagem(sp, 'paste', btn));
-  if (sp.image) mk('Remover imagem', () => aplicarImagem(sp, 'clear', btn));
-  const r = btn.getBoundingClientRect();
-  imgMenu.hidden = false;
-  const larg = imgMenu.offsetWidth || 200;
-  imgMenu.style.left = Math.min(r.left, window.innerWidth - larg - 10) + 'px';
-  imgMenu.style.top = Math.min(r.bottom + 4, window.innerHeight - imgMenu.offsetHeight - 10) + 'px';
-}
-
-document.addEventListener('mousedown', (e) => {
-  if (!imgMenu.hidden && !imgMenu.contains(e.target)) imgMenu.hidden = true;
-});
-
-// Ctrl+V com uma linha selecionada cola a imagem nela (fora dos campos de texto)
+// Ctrl+V no item aberto cola a imagem (fora dos campos de texto)
 document.addEventListener('keydown', (e) => {
-  if (!e.ctrlKey || e.key.toLowerCase() !== 'v' || selectedId === null) return;
+  if (!e.ctrlKey || e.key.toLowerCase() !== 'v' || expandedId === null) return;
   const el = document.activeElement;
   if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) return;
-  const sp = state.spells.find((s) => s.id === selectedId);
+  const sp = state.spells.find((s) => s.id === expandedId);
   if (!sp) return;
-  const row = [...rowsEl.children].find((r) => Number(r.dataset.id) === sp.id);
+  const row = rowDe(sp.id);
   aplicarImagem(sp, 'paste', row ? row.querySelector('.img-btn') : null);
 });
 
-// ---- tabela ----
+// ---- expandir / recolher (acordeao) ----
+
+function setExpanded(id, on) {
+  const row = rowDe(id);
+  if (!row) return;
+  const edit = row.querySelector('.edit');
+  if (on) {
+    // fecha os outros
+    if (expandedId !== null && expandedId !== id) setExpanded(expandedId, false);
+    expandedId = id;
+    row.classList.add('open');
+    edit.hidden = false;
+  } else {
+    if (expandedId === id) expandedId = null;
+    row.classList.remove('open');
+    edit.hidden = true;
+  }
+}
+
+function toggleExpanded(id) {
+  setExpanded(id, expandedId !== id);
+}
+
+// ---- lista ----
 
 function renderRows() {
   rowsEl.innerHTML = '';
@@ -152,21 +146,37 @@ function renderRows() {
     row.dataset.id = sp.id;
 
     const enabled = row.querySelector('.in-enabled');
+    const rName = row.querySelector('.r-name');
+    const rKey = row.querySelector('.r-key');
     const name = row.querySelector('.in-name');
     const key = row.querySelector('.in-key');
     const cd = row.querySelector('.in-cd');
     const color = row.querySelector('.in-color');
-    const imgBtn = row.querySelector('.img-btn');
 
     enabled.checked = sp.enabled;
+    row.classList.toggle('disabled', !sp.enabled);
+    rName.textContent = sp.name || 'Magia';
+    rKey.textContent = sp.key || '—';
     name.value = sp.name;
     key.value = sp.key;
     cd.value = sp.cooldown;
     color.value = sp.color;
 
-    enabled.onchange = () => { sp.enabled = enabled.checked; save(); };
-    name.oninput = () => { sp.name = name.value; saveDebounced(); };
-    key.oninput = () => { sp.key = key.value.toUpperCase(); saveDebounced(); };
+    enabled.onchange = () => {
+      sp.enabled = enabled.checked;
+      row.classList.toggle('disabled', !sp.enabled);
+      save();
+    };
+    name.oninput = () => {
+      sp.name = name.value;
+      rName.textContent = sp.name || 'Magia';
+      saveDebounced();
+    };
+    key.oninput = () => {
+      sp.key = key.value.toUpperCase();
+      rKey.textContent = sp.key || '—';
+      saveDebounced();
+    };
     cd.onchange = () => {
       const v = Math.round(Number(cd.value));
       sp.cooldown = Number.isFinite(v) ? Math.min(3600, Math.max(2, v)) : 40;
@@ -175,52 +185,59 @@ function renderRows() {
     };
     color.oninput = () => { sp.color = color.value; saveDebounced(); };
 
-    imgBtn.onclick = (e) => {
-      e.stopPropagation();
-      abrirImgMenu(sp, imgBtn);
-    };
+    // abrir/fechar
+    row.querySelector('.open').onclick = () => toggleExpanded(sp.id);
+    row.querySelector('.chev-btn').onclick = () => toggleExpanded(sp.id);
 
+    // imagem
+    const imgBtn = row.querySelector('.img-btn');
+    imgBtn.onclick = () => aplicarImagem(sp, 'pick', imgBtn);
+    row.querySelector('.act-pick').onclick = () => aplicarImagem(sp, 'pick', imgBtn);
+    row.querySelector('.act-paste').onclick = () => aplicarImagem(sp, 'paste', imgBtn);
+    row.querySelector('.act-clear').onclick = () => aplicarImagem(sp, 'clear', imgBtn);
+
+    // acoes
     row.querySelector('.btn-restart').onclick = () => api.restartSpell(sp.id);
     row.querySelector('.btn-del').onclick = () => {
+      if (expandedId === sp.id) expandedId = null;
       state.spells = state.spells.filter((s) => s.id !== sp.id);
       renderRows();
       save();
     };
 
-    row.addEventListener('mousedown', () => selectRow(sp.id));
-
     rowsEl.appendChild(row);
-    updateThumb(sp);
+    atualizarImagens(sp);
+    if (expandedId === sp.id) setExpanded(sp.id, true);
   }
   countEl.textContent = state.spells.length;
-  if (selectedId !== null) selectRow(selectedId);
+  emptyEl.hidden = state.spells.length > 0;
 }
 
-// ---- status ao vivo (atualiza so o texto, sem re-renderizar, pra nao perder o foco) ----
+// ---- status ao vivo ----
 
 api.onTick((items) => {
   const porId = new Map(items.map((it) => [it.id, it]));
   for (const row of rowsEl.children) {
     const sp = state ? state.spells.find((s) => s.id === Number(row.dataset.id)) : null;
-    const statusEl = row.querySelector('.status');
+    const statusEl = row.querySelector('.r-status');
     const it = sp ? porId.get(sp.id) : null;
     if (!sp || !sp.enabled) {
       statusEl.textContent = '—';
-      statusEl.className = 'st idle status';
+      statusEl.className = 'st idle r-status';
     } else if (!it || it.preview) {
       statusEl.textContent = '…';
-      statusEl.className = 'st idle status';
+      statusEl.className = 'st idle r-status';
     } else if (it.go) {
       statusEl.textContent = 'AGORA!';
-      statusEl.className = 'st go status';
+      statusEl.className = 'st go r-status';
     } else {
       statusEl.textContent = it.shown + 's';
-      statusEl.className = 'st status' + (it.shown <= 5 ? ' warn' : '');
+      statusEl.className = 'st r-status' + (it.shown <= 5 ? ' warn' : '');
     }
   }
 });
 
-// ---- som dos avisos (toca aqui: janela unica que sempre existe) ----
+// ---- som ----
 
 let actx = null;
 function beepFreq(freq, dur, delay = 0) {
@@ -252,7 +269,7 @@ api.onBeep(({ kind, second }) => {
 // ---- controles gerais ----
 
 document.getElementById('btn-add').onclick = () => {
-  state.spells.push({
+  const novo = {
     id: Date.now(),
     name: 'Nova magia',
     key: 'F1',
@@ -261,21 +278,34 @@ document.getElementById('btn-add').onclick = () => {
     enabled: false,
     image: null,
     pos: null,
-  });
+  };
+  state.spells.push(novo);
+  expandedId = novo.id;
   renderRows();
   save();
-  const inputs = rowsEl.querySelectorAll('.in-name');
-  const ultimo = inputs[inputs.length - 1];
-  if (ultimo) { ultimo.focus(); ultimo.select(); }
+  const row = rowDe(novo.id);
+  if (row) {
+    row.scrollIntoView({ block: 'nearest' });
+    const n = row.querySelector('.in-name');
+    if (n) { n.focus(); n.select(); }
+  }
 };
 
 document.getElementById('btn-restart-all').onclick = () => api.restartAll();
+document.getElementById('btn-test').onclick = () => beepFreq(880, 0.12);
 
-// botoes da barra de titulo propria
 document.getElementById('win-min').onclick = () => api.winMinimize();
 document.getElementById('win-max').onclick = () => api.winMaximize();
 document.getElementById('win-close').onclick = () => api.winClose();
-document.getElementById('btn-test').onclick = () => beepFreq(880, 0.12);
+
+// painel Overlay recolhível
+const ovHead = document.getElementById('ov-head');
+const ovBody = document.getElementById('ov-body');
+ovHead.onclick = () => {
+  const abrir = ovBody.hidden;
+  ovBody.hidden = !abrir;
+  ovHead.setAttribute('aria-expanded', String(abrir));
+};
 
 function atualizarIconSlider() {
   const so = sizeEl.value !== 'icon';
@@ -297,14 +327,12 @@ volumeEl.oninput = () => {
   preencherSlider(volumeEl);
   saveDebounced();
 };
-
 opacityEl.oninput = () => {
   state.settings.opacity = Number(opacityEl.value) / 100;
   opacityValEl.textContent = opacityEl.value + '%';
   preencherSlider(opacityEl);
   saveDebounced();
 };
-
 iconSizeEl.oninput = () => {
   state.settings.iconSize = Number(iconSizeEl.value);
   iconSizeValEl.textContent = iconSizeEl.value + 'px';
@@ -312,7 +340,7 @@ iconSizeEl.oninput = () => {
   saveDebounced();
 };
 
-// ---- modo "arrastar overlay" ----
+// ---- arrastar overlay ----
 
 let posMode = false;
 const btnPos = document.getElementById('btn-position');
@@ -325,7 +353,6 @@ btnPos.onclick = () => {
   btnPos.classList.toggle('active', posMode);
 };
 
-// enquanto o usuario arrasta, o main salva e avisa aqui (pra nao perder no proximo save)
 api.onSettings((s) => {
   if (!state) return;
   state.settings.corner = s.corner;
